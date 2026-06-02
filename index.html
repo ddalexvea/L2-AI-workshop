@@ -36,10 +36,10 @@
     .pill-danger  { background: #fee2e2; color: #b91c1c; }
     .pill-neutral { background: #f1f5f9; color: #475569; }
     .pill-purple  { background: #ede9fe; color: #6d28d9; }
-    .pill-pink    { background: #fce7f3; color: #9d174d; }
-    .pill-orange  { background: #ffedd5; color: #c2410c; }
     .pill-teal    { background: #ccfbf1; color: #0f766e; }
     .pill-indigo  { background: #e0e7ff; color: #3730a3; }
+    .pill-orange  { background: #ffedd5; color: #c2410c; }
+    .pill-pink    { background: #fce7f3; color: #9d174d; }
 
     .pill-drag { cursor: grab; border-radius: 999px; transition: opacity 0.1s; }
     .pill-drag:active { cursor: grabbing; }
@@ -58,75 +58,6 @@
       border: 1px solid #d0d7de;
     }
     .btn-ghost:hover { background: #f1f5f9; }
-
-    /* Stage buttons */
-    .stage-bar {
-      display: flex; flex-wrap: wrap; gap: 6px;
-    }
-    .stage-btn {
-      cursor: pointer;
-      display: flex; align-items: center; gap: 6px;
-      padding: 7px 14px; border-radius: 8px;
-      font-size: 13px; font-weight: 500;
-      border: 1.5px solid #d0d7de;
-      background: #fff; color: #475569;
-      transition: all 0.15s;
-      user-select: none;
-    }
-    .stage-btn:hover { border-color: #94a3b8; color: #1f2328; background: #f8fafc; }
-    .stage-btn.active {
-      border-color: currentColor;
-      background: var(--stage-bg);
-      color: var(--stage-color);
-    }
-    .stage-num {
-      width: 18px; height: 18px; border-radius: 999px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700;
-      background: currentColor; opacity: 0.15;
-    }
-    .stage-btn.active .stage-num { opacity: 1; background: var(--stage-color); color: #fff; }
-
-    /* Stage panel */
-    .stage-panel {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.28s ease, opacity 0.22s ease;
-      opacity: 0;
-    }
-    .stage-panel.open {
-      max-height: 320px;
-      opacity: 1;
-    }
-    .stage-panel-inner {
-      border-radius: 10px;
-      border: 1.5px solid var(--stage-border);
-      background: var(--stage-bg);
-      padding: 14px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .stage-title {
-      font-size: 14px; font-weight: 700;
-      color: var(--stage-color);
-      display: flex; align-items: center; gap: 8px;
-    }
-    .stage-desc {
-      font-size: 13px; line-height: 1.65; color: #374151;
-    }
-    .stage-checklist {
-      display: flex; flex-direction: column; gap: 5px;
-    }
-    .stage-check-item {
-      font-size: 12.5px; line-height: 1.5; color: #4b5563;
-      display: flex; align-items: flex-start; gap: 7px;
-    }
-    .stage-check-icon {
-      margin-top: 2px; flex-shrink: 0;
-      width: 14px; height: 14px; border-radius: 3px;
-      border: 1.5px solid var(--stage-color);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 9px; color: var(--stage-color);
-    }
 
     /* Paste area */
     .paste-area {
@@ -154,10 +85,10 @@
     .msg-line.has-danger   { background: rgba(185,28,28,0.08); }
     .msg-line.has-neutral  { background: #f1f5f9; }
     .msg-line.has-purple   { background: rgba(109,40,217,0.07); }
-    .msg-line.has-pink     { background: rgba(157,23,77,0.07); }
-    .msg-line.has-orange   { background: rgba(194,65,12,0.07); }
     .msg-line.has-teal     { background: rgba(15,118,110,0.07); }
     .msg-line.has-indigo   { background: rgba(55,48,163,0.07); }
+    .msg-line.has-orange   { background: rgba(194,65,12,0.07); }
+    .msg-line.has-pink     { background: rgba(157,23,77,0.07); }
 
     .text-sm { font-size: 13px; line-height: 1.7; }
 
@@ -194,53 +125,143 @@
     }
     .toggle-btn:hover { opacity: 1; }
 
-    /* Espanso alias chip */
-    .alias-row {
-      display: flex; align-items: center; gap: 8px; margin-top: 2px;
+    /* Mode switcher */
+    .mode-bar {
+      display: flex; align-items: center; gap: 6px;
+      background: #f1f5f9; border-radius: 999px;
+      padding: 3px; width: fit-content;
     }
-    .alias-label { font-size: 11px; color: #6b7280; font-weight: 500; }
-    .alias-chip {
+    .mode-btn {
+      cursor: pointer; border: none; border-radius: 999px;
+      padding: 4px 16px; font-size: 12px; font-weight: 600;
+      transition: background 0.15s, color 0.15s;
+      background: transparent; color: #64748b;
+    }
+    .mode-btn.active { background: #1f2328; color: #fff; }
+    .mode-btn:not(.active):hover { background: #e2e8f0; }
+
+    .mode-label {
+      font-size: 11px; font-weight: 500; color: #64748b;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+
+    /* Prompt output panel */
+    .prompt-panel {
+      border: 1.5px solid #2563eb; border-radius: 8px;
+      background: #f8faff; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .prompt-panel-header {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .prompt-panel-title { font-size: 13px; font-weight: 600; color: #1d4ed8; }
+    .prompt-output {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px; line-height: 1.7; white-space: pre-wrap;
+      background: #fff; border: 1px solid #dbeafe; border-radius: 6px;
+      padding: 12px 14px; color: #1f2328;
+    }
+
+    /* Stage buttons */
+    .stage-bar {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .stage-btn {
       cursor: pointer;
-      display: inline-flex; align-items: center; gap: 5px;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      border: 1.5px solid #d0d7de;
+      background: #fff; color: #475569;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .stage-btn:hover { border-color: #94a3b8; color: #1f2328; background: #f8fafc; }
+    .stage-btn.active {
+      border-color: var(--stage-color);
+      background: var(--stage-bg);
+      color: var(--stage-color);
+    }
+    .stage-num {
+      width: 18px; height: 18px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; flex-shrink: 0;
+      background: #e2e8f0; color: #64748b;
+      transition: background 0.15s, color 0.15s;
+    }
+    .stage-btn.active .stage-num {
+      background: var(--stage-color); color: #fff;
+    }
+
+    /* Stage panel */
+    .stage-panel {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.28s ease, opacity 0.22s ease;
+      opacity: 0;
+    }
+    .stage-panel.open { max-height: 360px; opacity: 1; }
+
+    .stage-panel-inner {
+      border-radius: 10px;
+      border: 1.5px solid var(--stage-border);
+      background: var(--stage-bg);
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .stage-header-row {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px;
+    }
+    .stage-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--stage-color);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stage-desc { font-size: 13px; line-height: 1.65; color: #374151; }
+    .stage-checklist { display: flex; flex-direction: column; gap: 5px; }
+    .stage-check-item {
+      font-size: 12.5px; line-height: 1.5; color: #4b5563;
+      display: flex; align-items: flex-start; gap: 7px;
+    }
+    .stage-check-dot {
+      margin-top: 5px; flex-shrink: 0;
+      width: 6px; height: 6px; border-radius: 999px;
+      background: var(--stage-color); opacity: 0.5;
+    }
+
+    /* Alias chip (click to copy, no icon) */
+    .alias-block { display: flex; align-items: center; gap: 8px; }
+    .alias-label { font-size: 11px; color: #6b7280; font-weight: 500; white-space: nowrap; }
+    .alias-chip {
+      cursor: pointer; user-select: all;
+      display: inline-block;
       padding: 3px 10px; border-radius: 6px;
       font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 12px; font-weight: 600;
       background: rgba(0,0,0,0.06); color: var(--stage-color);
       border: 1px solid var(--stage-border);
       transition: background 0.15s;
-      user-select: all;
     }
-    .alias-chip:hover { background: rgba(0,0,0,0.11); }
-    .alias-chip svg { flex-shrink: 0; }
-
-    /* Copied toast */
-    .copy-toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: #1f2328; color: #fff;
-      padding: 8px 18px; border-radius: 8px;
-      font-size: 13px; font-weight: 500;
-      pointer-events: none;
-      opacity: 0; transition: opacity 0.2s;
-      z-index: 9999;
+    .alias-chip:hover { background: rgba(0,0,0,0.12); }
+    .alias-copied {
+      font-size: 11px; color: #15803d; font-weight: 500;
+      animation: fadeIn 0.15s ease;
     }
-    .copy-toast.show { opacity: 1; }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   </style>
 </head>
 <body>
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useCallback, useRef } = React;
+const { useState, useRef } = React;
 
+/* ── Stage definitions ─────────────────────────────────── */
 const STAGES = [
   {
-    id: "triage",
-    label: "Triage",
-    emoji: "🔍",
-    alias: ";ws-triage",
-    color: "#2563eb",
-    bg: "#eff6ff",
-    border: "#bfdbfe",
+    id: "triage", label: "Triage", alias: ";ws-triage",
+    color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
     desc: "First contact — quickly assess what the customer is reporting and what is missing before going deeper.",
     checks: [
       "Identify the product area and affected component",
@@ -249,22 +270,10 @@ const STAGES = [
       "Check if it maps to a known issue or KB article",
       "Define the next immediate action",
     ],
-    elements: [
-      { id: "product_area",  label: "Product Area",   tone: "info" },
-      { id: "severity",      label: "Severity Signal", tone: "danger" },
-      { id: "missing_info",  label: "Missing Info",    tone: "neutral" },
-      { id: "known_issue",   label: "Known Issue",     tone: "warning" },
-      { id: "next_step",     label: "Next Step",       tone: "success" },
-    ],
   },
   {
-    id: "investigation",
-    label: "Investigation",
-    emoji: "🧪",
-    alias: ";ws-investigation",
-    color: "#15803d",
-    bg: "#f0fdf4",
-    border: "#bbf7d0",
+    id: "investigation", label: "Investigation", alias: ";ws-investigation",
+    color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
     desc: "Dig into the evidence — annotate statements, spot hypotheses, and trace towards a root cause.",
     checks: [
       "Label each claim as statement vs. evidence",
@@ -273,22 +282,10 @@ const STAGES = [
       "Identify the earliest signal in the timeline",
       "Pinpoint the root cause if visible",
     ],
-    elements: [
-      { id: "statement",  label: "Statement",  tone: "info" },
-      { id: "evidence",   label: "Evidence",   tone: "success" },
-      { id: "hypothesis", label: "Hypothesis", tone: "warning" },
-      { id: "root_cause", label: "Root Cause", tone: "danger" },
-      { id: "next_step",  label: "Next Step",  tone: "neutral" },
-    ],
   },
   {
-    id: "artefact",
-    label: "Artefact Correlation",
-    emoji: "🔗",
-    alias: ";ws-artefact",
-    color: "#6d28d9",
-    bg: "#faf5ff",
-    border: "#ddd6fe",
+    id: "artefact", label: "Artefact Correlation", alias: ";ws-artefact",
+    color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
     desc: "Cross-reference logs, metrics, traces, and configs to build a correlated timeline of events.",
     checks: [
       "Tag log lines, metric values, and trace IDs mentioned",
@@ -297,22 +294,10 @@ const STAGES = [
       "Note any gaps or missing artefacts to request",
       "Correlate across products (APM ↔ Logs ↔ Infra)",
     ],
-    elements: [
-      { id: "log",       label: "Log Entry",   tone: "indigo" },
-      { id: "metric",    label: "Metric",      tone: "teal" },
-      { id: "trace",     label: "Trace",       tone: "purple" },
-      { id: "config",    label: "Config",      tone: "warning" },
-      { id: "timeline",  label: "Timeline",    tone: "neutral" },
-    ],
   },
   {
-    id: "reproduction",
-    label: "Reproduction",
-    emoji: "🔁",
-    alias: ";ws-reproduction",
-    color: "#c2410c",
-    bg: "#fff7ed",
-    border: "#fed7aa",
+    id: "reproduction", label: "Reproduction", alias: ";ws-reproduction",
+    color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
     desc: "Break down the customer's scenario into reproducible steps — what's needed, what to do, and what to expect.",
     checks: [
       "List every prerequisite (version, env, config)",
@@ -321,22 +306,10 @@ const STAGES = [
       "Flag any blocker that prevents reproduction",
       "Note if a minimal repro is possible",
     ],
-    elements: [
-      { id: "prereq",    label: "Prerequisite",     tone: "info" },
-      { id: "step",      label: "Repro Step",       tone: "warning" },
-      { id: "expected",  label: "Expected",         tone: "success" },
-      { id: "actual",    label: "Actual",           tone: "danger" },
-      { id: "blocker",   label: "Blocker",          tone: "neutral" },
-    ],
   },
   {
-    id: "escalation",
-    label: "Escalation",
-    emoji: "🚀",
-    alias: ";ws-escalation",
-    color: "#0f766e",
-    bg: "#f0fdfa",
-    border: "#99f6e4",
+    id: "escalation", label: "Escalation", alias: ";ws-escalation",
+    color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
     desc: "Build the escalation — annotate customer impact, validated repro steps, and a clear ask for engineering.",
     checks: [
       "Quantify the customer impact (users, revenue, SLA)",
@@ -345,35 +318,80 @@ const STAGES = [
       "Draft a specific, scoped ask for the eng team",
       "Flag priority level and any deadline",
     ],
-    elements: [
-      { id: "impact",    label: "Customer Impact",  tone: "danger" },
-      { id: "repro",     label: "Confirmed Repro",  tone: "success" },
-      { id: "root_cause",label: "Root Cause",       tone: "warning" },
-      { id: "ask",       label: "Ask Engineering",  tone: "info" },
-      { id: "priority",  label: "Priority",         tone: "pink" },
-    ],
   },
 ];
 
-const STAGE_CSS_VARS = {
-  triage:       { "--stage-color": "#2563eb", "--stage-bg": "#eff6ff", "--stage-border": "#bfdbfe" },
-  investigation:{ "--stage-color": "#15803d", "--stage-bg": "#f0fdf4", "--stage-border": "#bbf7d0" },
-  artefact:     { "--stage-color": "#6d28d9", "--stage-bg": "#faf5ff", "--stage-border": "#ddd6fe" },
-  reproduction: { "--stage-color": "#c2410c", "--stage-bg": "#fff7ed", "--stage-border": "#fed7aa" },
-  escalation:   { "--stage-color": "#0f766e", "--stage-bg": "#f0fdfa", "--stage-border": "#99f6e4" },
-};
+/* ── Elements by mode ──────────────────────────────────── */
+const L2_ELEMENTS = [
+  { id: "statement",  label: "Statement",    tone: "info" },
+  { id: "evidence",   label: "Evidence",     tone: "success" },
+  { id: "hypothesis", label: "Hypothesis",   tone: "warning" },
+  { id: "missing",    label: "Missing Info", tone: "neutral" },
+  { id: "root_cause", label: "Root Cause",   tone: "danger" },
+  { id: "next_step",  label: "Next Step",    tone: "info" },
+];
 
-// Detect if a line looks like a config key: value pattern
+const L3_ELEMENTS = [
+  { id: "sentiment",  label: "Sentiment",         tone: "danger" },
+  { id: "unmet",      label: "Unmet Expectation", tone: "warning" },
+  { id: "impact",     label: "Impact",            tone: "danger" },
+  { id: "timeline",   label: "Timeline Pressure", tone: "warning" },
+  { id: "escalation", label: "Escalation Signal", tone: "neutral" },
+  { id: "positive",   label: "Positive Signal",   tone: "success" },
+];
+
+const ELEMENTS_BY_MODE = { L2: L2_ELEMENTS, L3: L3_ELEMENTS };
+
+/* ── Prompt block generator ────────────────────────────── */
+function lineText(line) {
+  if (line.type === "text")       return line.text;
+  if (line.type === "code")       return line.rows.join("\n");
+  if (line.type === "intro-code") return line.intro + "\n" + line.rows.join("\n");
+  return "";
+}
+
+function generatePromptBlock(lines, tags, elements) {
+  const entries = [];
+  for (const line of lines) {
+    const lineTags = tags[line.id] ?? [];
+    const text = lineText(line);
+    if (lineTags.length === 0) {
+      entries.push({ labels: [], text });
+    } else {
+      const labels = [...new Set(lineTags.map(t => {
+        const el = elements.find(e => e.id === t.elementId);
+        return el ? el.label.toUpperCase() : null;
+      }).filter(Boolean))];
+      entries.push({ labels, text });
+    }
+  }
+
+  const out = ["## Customer Message (annotated)", ""];
+  for (const { labels, text } of entries) {
+    if (labels.length === 0) {
+      const indent = " ".repeat("[UNLABELED] ".length);
+      out.push(`[UNLABELED] ${text.replace(/\n/g, "\n" + indent)}`);
+    } else {
+      const tag = labels.join(" / ");
+      const indent = " ".repeat(tag.length + 3);
+      out.push(`[${tag}] ${text.replace(/\n/g, "\n" + indent)}`);
+    }
+  }
+
+  const allLabels = [...new Set(entries.flatMap(e => e.labels))];
+  out.push("", "---", `Labels used: ${allLabels.join(" · ") || "none"}`);
+  return out.join("\n");
+}
+
+/* ── Text parser ───────────────────────────────────────── */
 const CONFIG_RE = /^[\w]+\s*:/;
 
 function parseText(raw) {
   const paragraphs = raw.split(/\n{2,}/g).map(p => p.trim()).filter(Boolean);
   const lines = [];
   let id = 0;
-
   for (const para of paragraphs) {
     const rows = para.split("\n").map(r => r.trim()).filter(Boolean);
-
     if (rows.every(r => CONFIG_RE.test(r))) {
       lines.push({ id: `l${++id}`, type: "code", rows });
     } else if (rows.length > 1 && rows.slice(1).every(r => CONFIG_RE.test(r))) {
@@ -412,7 +430,7 @@ function ConfigRows({ rows }) {
 let _uid = 0;
 const nextUid = () => ++_uid;
 
-const DEFAULT_TEXT = `Our requirement is to exclude containers of all namespaces and include only \`ig1\` and \`ncc-operators\` namespace in a Kubernetes cluster.
+const L2_DEFAULT_TEXT = `Our requirement is to exclude containers of all namespaces and include only \`ig1\` and \`ncc-operators\` namespace in a Kubernetes cluster.
 
 Additionally, from the \`ig1\` namespace, we want to exclude logs from the \`istio-proxy\` container from being sent to the Datadog UI.
 
@@ -425,50 +443,75 @@ But still we are seeing logs of container name \`istio-proxy\` in Datadog UI.
 
 Please help us with correct configuration to exclude logs of container \`istio-proxy\` which is under namespace.`;
 
+const L3_DEFAULT_TEXT = `I am extremely disappointed with the level of support we have received. It has been over 2 weeks since we reported that our Datadog dashboards are showing incorrect host counts, and we believe we are being overbilled as a result.
+
+Despite multiple follow-ups, we have not received a concrete resolution or even an acknowledgment of the root cause. Our team has provided all requested flares, logs, and configuration details on day one.
+
+The responses we receive are generic and do not reflect that anyone has actually reviewed our data. We asked for a timeline last week and received no answer.
+
+We are a P1 enterprise customer and this level of service is not acceptable. We are now considering escalating this to our account executive.`;
+
+const DEFAULT_TEXTS = { L2: L2_DEFAULT_TEXT, L3: L3_DEFAULT_TEXT };
+
 function getInitialStage() {
-  if (typeof window !== "undefined") {
+  try {
     const p = new URLSearchParams(window.location.search).get("stage");
     if (p && STAGES.find(s => s.id === p)) return p;
-  }
+  } catch (_) {}
   return null;
 }
 
+/* ── App ───────────────────────────────────────────────── */
 function App() {
-  const [raw, setRaw]               = useState(DEFAULT_TEXT);
-  const [lines, setLines]           = useState(() => parseText(DEFAULT_TEXT));
-  const [editing, setEditing]       = useState(false);
-  const [tags, setTags]             = useState({});
-  const [dragging, setDragging]     = useState(null);
-  const [over, setOver]             = useState(null);
-  const [paletteOpen, setPaletteOpen] = useState(true);
+  const [mode, setMode]               = useState("L2");
+  const [raw, setRaw]                 = useState(L2_DEFAULT_TEXT);
+  const [lines, setLines]             = useState(() => parseText(L2_DEFAULT_TEXT));
+  const [editing, setEditing]         = useState(false);
+  const [tags, setTags]               = useState({});
+  const [dragging, setDragging]       = useState(null);
+  const [over, setOver]               = useState(null);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [promptBlock, setPromptBlock] = useState(null);
+  const [copied, setCopied]           = useState(false);
   const [activeStage, setActiveStage] = useState(getInitialStage);
-  const [toastMsg, setToastMsg]       = useState("");
-  const [toastVisible, setToastVisible] = useState(false);
-  const toastTimer = useRef(null);
+  const [copiedAlias, setCopiedAlias] = useState(null);
+  const aliasTimer = useRef(null);
 
-  function showToast(msg) {
-    setToastMsg(msg);
-    setToastVisible(true);
-    clearTimeout(toastTimer.current);
-    toastTimer.current = setTimeout(() => setToastVisible(false), 1800);
+  const ELEMENTS = ELEMENTS_BY_MODE[mode];
+
+  function switchMode(m) {
+    if (m === mode) return;
+    const text = DEFAULT_TEXTS[m];
+    setMode(m); setRaw(text); setLines(parseText(text));
+    setTags({}); setPromptBlock(null); setEditing(false);
   }
-
-  function copyAlias(alias) {
-    navigator.clipboard.writeText(alias).then(() => showToast(`Copied ${alias}`));
-  }
-
-  const currentStage = STAGES.find(s => s.id === activeStage) ?? null;
-  const ELEMENTS = currentStage ? currentStage.elements : STAGES[1].elements;
 
   function toggleStage(id) {
     setActiveStage(prev => prev === id ? null : id);
-    setTags({});
+  }
+
+  function copyAlias(alias) {
+    navigator.clipboard.writeText(alias).then(() => {
+      setCopiedAlias(alias);
+      clearTimeout(aliasTimer.current);
+      aliasTimer.current = setTimeout(() => setCopiedAlias(null), 1800);
+    });
+  }
+
+  function handleGenerate() {
+    setPromptBlock(generatePromptBlock(lines, tags, ELEMENTS));
+    setCopied(false);
+  }
+
+  function handleCopyPrompt(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   }
 
   function loadMessage() {
-    setLines(parseText(raw));
-    setTags({});
-    setEditing(false);
+    setLines(parseText(raw)); setTags({}); setEditing(false);
   }
 
   function onDrop(lineId) {
@@ -477,8 +520,7 @@ function App() {
       ...prev,
       [lineId]: [...(prev[lineId] ?? []), { uid: nextUid(), elementId: dragging }],
     }));
-    setDragging(null);
-    setOver(null);
+    setDragging(null); setOver(null);
   }
 
   function removeTag(lineId, uid) {
@@ -493,10 +535,14 @@ function App() {
   return (
     <div className="app">
 
-      {/* Stage selector */}
+      {/* ── Stage buttons ── */}
       <div className="stage-bar">
         {STAGES.map((stage, i) => {
-          const cssVars = STAGE_CSS_VARS[stage.id];
+          const cssVars = {
+            "--stage-color": stage.color,
+            "--stage-bg":    stage.bg,
+            "--stage-border":stage.border,
+          };
           return (
             <button
               key={stage.id}
@@ -505,44 +551,46 @@ function App() {
               onClick={() => toggleStage(stage.id)}
             >
               <span className="stage-num">{i + 1}</span>
-              {stage.emoji} {stage.label}
+              {stage.label}
             </button>
           );
         })}
       </div>
 
-      {/* Stage panel (hidden until a stage is selected) */}
+      {/* ── Stage panels (expand on click) ── */}
       {STAGES.map(stage => {
-        const cssVars = STAGE_CSS_VARS[stage.id];
-        const isOpen  = activeStage === stage.id;
+        const cssVars = {
+          "--stage-color": stage.color,
+          "--stage-bg":    stage.bg,
+          "--stage-border":stage.border,
+        };
+        const isOpen = activeStage === stage.id;
         return (
           <div key={stage.id} className={`stage-panel${isOpen ? " open" : ""}`} style={cssVars}>
             <div className="stage-panel-inner">
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+              <div className="stage-header-row">
                 <div className="stage-title">
-                  <span>{stage.emoji}</span>
-                  <span>Stage {STAGES.indexOf(stage) + 1} — {stage.label}</span>
+                  Stage {STAGES.indexOf(stage) + 1} — {stage.label}
                 </div>
-                <div className="alias-row">
-                  <span className="alias-label">espanso</span>
+                <div className="alias-block">
+                  <span className="alias-label">espanso alias</span>
                   <span
                     className="alias-chip"
                     title="Click to copy"
                     onClick={() => copyAlias(stage.alias)}
                   >
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
-                      <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
-                    </svg>
                     {stage.alias}
                   </span>
+                  {copiedAlias === stage.alias && (
+                    <span className="alias-copied">Copied!</span>
+                  )}
                 </div>
               </div>
               <p className="stage-desc">{stage.desc}</p>
               <div className="stage-checklist">
                 {stage.checks.map((c, i) => (
                   <div key={i} className="stage-check-item">
-                    <span className="stage-check-icon">✓</span>
+                    <span className="stage-check-dot" />
                     <span>{c}</span>
                   </div>
                 ))}
@@ -552,7 +600,16 @@ function App() {
         );
       })}
 
-      {/* Editing panel */}
+      {/* ── Mode switcher ── */}
+      <div className="row" style={{ gap: 10 }}>
+        <div className="mode-bar">
+          <button className={`mode-btn${mode === "L2" ? " active" : ""}`} onClick={() => switchMode("L2")}>L2</button>
+          <button className={`mode-btn${mode === "L3" ? " active" : ""}`} onClick={() => switchMode("L3")}>L3</button>
+        </div>
+        <span className="mode-label">{mode === "L2" ? "Technical Ticket Annotation" : "DSAT Annotation"}</span>
+      </div>
+
+      {/* ── Editing panel ── */}
       {editing ? (
         <>
           <textarea
@@ -589,6 +646,11 @@ function App() {
               {paletteOpen ? "Hide labels" : "Show labels"}
             </button>
             <button className="toggle-btn" onClick={() => setEditing(true)}>Change message</button>
+            {totalTags > 0 && (
+              <button className="btn btn-primary" style={{ fontSize: 12, padding: "4px 12px" }} onClick={handleGenerate}>
+                Generate prompt block
+              </button>
+            )}
           </div>
 
           <hr className="divider" />
@@ -613,16 +675,13 @@ function App() {
                   {line.type === "text" && (
                     <p className="text-sm">{renderInline(line.text)}</p>
                   )}
-                  {line.type === "code" && (
-                    <ConfigRows rows={line.rows} />
-                  )}
+                  {line.type === "code" && <ConfigRows rows={line.rows} />}
                   {line.type === "intro-code" && (
                     <>
                       <p className="text-sm" style={{ marginBottom: 4 }}>{renderInline(line.intro)}</p>
                       <ConfigRows rows={line.rows} />
                     </>
                   )}
-
                   {lineTags.length > 0 && (
                     <div className="tags-row">
                       {lineTags.map(tag => {
@@ -645,10 +704,32 @@ function App() {
               );
             })}
           </div>
+
+          {/* Prompt block output */}
+          {promptBlock && (
+            <>
+              <hr className="divider" />
+              <div className="prompt-panel">
+                <div className="prompt-panel-header">
+                  <span className="prompt-panel-title">Annotated prompt block</span>
+                  <div className="spacer" />
+                  <button
+                    className="btn btn-ghost"
+                    style={{ fontSize: 12, padding: "4px 12px", marginLeft: 8 }}
+                    onClick={() => handleCopyPrompt(promptBlock)}
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                  <button className="toggle-btn" style={{ marginLeft: 4 }} onClick={() => setPromptBlock(null)}>
+                    ✕
+                  </button>
+                </div>
+                <pre className="prompt-output">{promptBlock}</pre>
+              </div>
+            </>
+          )}
         </>
       )}
-      {/* Copy toast */}
-      <div className={`copy-toast${toastVisible ? " show" : ""}`}>{toastMsg}</div>
     </div>
   );
 }
