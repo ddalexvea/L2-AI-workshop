@@ -200,7 +200,7 @@
       transition: max-height 0.28s ease, opacity 0.22s ease;
       opacity: 0;
     }
-    .stage-panel.open { max-height: 360px; opacity: 1; }
+    .stage-panel.open { max-height: 420px; opacity: 1; }
 
     .stage-panel-inner {
       border-radius: 10px;
@@ -230,6 +230,25 @@
       background: var(--stage-color); opacity: 0.5;
     }
 
+    /* Stage prompt block */
+    .stage-prompt-wrap { position: relative; }
+    .stage-prompt {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11.5px; line-height: 1.7; white-space: pre-wrap;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--stage-border);
+      border-radius: 6px; padding: 12px 14px 12px 14px;
+      color: #1f2328; max-height: 260px; overflow-y: auto;
+    }
+    .stage-copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      cursor: pointer; background: rgba(255,255,255,0.9);
+      border: 1px solid var(--stage-border); border-radius: 6px;
+      padding: 3px 10px; font-size: 11px; font-weight: 600;
+      color: var(--stage-color); transition: background 0.15s;
+    }
+    .stage-copy-btn:hover { background: #fff; }
+
   </style>
 </head>
 <body>
@@ -241,64 +260,141 @@ const { useState } = React;
 /* ── Stage definitions ─────────────────────────────────── */
 const STAGES = [
   {
-    id: "triage", label: "Triage", alias: ";p_s_1",
+    id: "triage", label: "Kickoff", alias: ";p_s_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    desc: "First contact — quickly assess what the customer is reporting and what is missing before going deeper.",
-    checks: [
-      "Identify the product area and affected component",
-      "Flag any missing information (logs, versions, config)",
-      "Spot severity signals (production down? data loss?)",
-      "Check if it maps to a known issue or KB article",
-      "Define the next immediate action",
-    ],
+    prompt: `I'm a Datadog TSE2 starting a ticket investigation leveraging AI. I'm working in 5 different stages: Kickoff, Investigation, Log/Configuration Codebase Correlation, Reproduction, and Escalation.
+
+Using the customer message below, complete in order:
+1. Restate the problem in one sentence
+2. List all investigation elements: Statement, Evidence, Hypothesis
+3. Assign a trust level to each: Customer Claim / Unverified / Speculative / Low / Medium / High
+4. Propose 1-3 initial hypotheses with confidence % (max 30% at this stage). Never modify an existing hypothesis — only add new ones, always at a lower confidence than the current highest.
+5. List every artifact or piece of information still needed to verify each element, and for each one state why it is required
+
+For each trust level, quote the exact customer wording that justified it, or write "no evidence yet".
+
+Example output format:
+| Element | Content | Trust | Justification |
+|---------|---------|-------|---------------|
+| Statement | [restate the symptom] | Customer Claim | "[exact customer quote]" |
+| H1 | [possible cause] | Speculative | no artifact evidence yet |
+
+Do not include Root Cause or Workaround rows — those are determined in later stages.
+
+Minimum artifact rule: based on the customer message and the unverified elements above, determine which artifact types are relevant for this specific issue. Infer candidates from the product area, environment, and symptoms — do not use a fixed list. For each candidate, decide needed or not needed and justify why in one sentence.
+
+Example artifact decision table:
+| Artifact | Needed | Why |
+|----------|--------|-----|
+| [artifact type] | YES/NO | [one sentence reason] |
+
+Output: 1-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.
+
+[PASTE CUSTOMER MESSAGE HERE]`,
   },
   {
     id: "investigation", label: "Investigation", alias: ";p_s_2",
     color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
-    desc: "Dig into the evidence — annotate statements, spot hypotheses, and trace towards a root cause.",
-    checks: [
-      "Label each claim as statement vs. evidence",
-      "Form at least one falsifiable hypothesis",
-      "Look for contradictions in the customer's data",
-      "Identify the earliest signal in the timeline",
-      "Pinpoint the root cause if visible",
-    ],
+    prompt: `Stage 2 — Investigation. Stage 1 identified initial hypotheses. Artifacts are now available.
+
+Using the artifacts identified in Stage 1, complete in order:
+1. Examine the configuration artifact: confirm the customer's claimed settings are present
+2. Examine the runtime artifact: confirm the Agent loaded those settings at runtime
+3. Note any gap between claimed config and actual loaded config
+4. Check official Datadog documentation for explicit mention of the interaction between the relevant settings
+5. Update each element's trust level based on direct artifact evidence
+6. Update hypothesis confidence %
+
+For each trust level change, quote the exact line from the artifact. Do not change trust without a direct quote.
+
+Example evidence table:
+| Finding | Artifact | Quote | Impact on H1 |
+|---------|----------|-------|-------------|
+| [what was found] | [artifact name] | "[exact line]" | Supports/Refutes H1 |
+
+Output: updated elements table + evidence table + updated hypothesis confidence % + one key finding sentence.
+
+[ATTACH HELM VALUES AND AGENT FLARE]`,
   },
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    desc: "Cross-reference logs, metrics, traces, and configs to build a correlated timeline of events.",
-    checks: [
-      "Tag log lines, metric values, and trace IDs mentioned",
-      "Link configuration to the observed behaviour",
-      "Identify the timeline marker that triggered the issue",
-      "Note any gaps or missing artefacts to request",
-      "Correlate across products (APM ↔ Logs ↔ Infra)",
-    ],
+    prompt: `Stage 3 — Log/Configuration Codebase Correlation. Stage 2 confirmed the configuration. Now correlate findings with the Datadog Agent codebase.
+
+Complete in order:
+1. Search the datadog-agent GitHub repository for files that implement the relevant filter logic
+2. Find the function or component that defines filter group precedence
+3. Use git blame to identify when the behavior changed and which commit introduced it
+4. Update hypothesis with code evidence
+
+For each finding, quote the exact file path + line number + code or comment. Do not paraphrase — direct quote only.
+
+Example:
+| File | Line | Quote | Verdict |
+|------|------|-------|---------|
+| [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
+
+Output: code evidence table + updated hypothesis confidence % (expected 70-95%) + one-line root cause statement.
+
+[PASTE STAGE 2 FINDINGS HERE]`,
   },
   {
     id: "reproduction", label: "Reproduction", alias: ";p_s_4",
     color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
-    desc: "Break down the customer's scenario into reproducible steps — what's needed, what to do, and what to expect.",
-    checks: [
-      "List every prerequisite (version, env, config)",
-      "Number and annotate each reproduction step",
-      "Capture the expected vs. actual behaviour",
-      "Flag any blocker that prevents reproduction",
-      "Note if a minimal repro is possible",
-    ],
+    prompt: `Stage 4 — Reproduction. The hypothesis is confirmed by codebase evidence. Reproduce the issue in minikube.
+
+Before anything else:
+1. Clean minikube — remove all pods and deployments. Do not delete secrets or the cluster itself. Retrieve existing API keys from kubectl secrets and reuse them.
+2. Present the full deployment plan (namespaces, pods, Agent config, debug flags) and wait for approval before executing.
+
+Then complete in order:
+3. Create namespaces matching the customer environment
+4. Deploy simulation pods that produce logs in the target namespace
+5. Deploy the Datadog Agent using the exact customer Helm values — do not change any filter setting
+6. Confirm the issue is reproduced (logs reaching Datadog despite the exclusion rule)
+7. Enable Agent debug logging and capture the filter evaluation output
+8. Document each step with the exact command and output
+
+Before each step, verify the configuration matches the customer Helm values exactly. If anything differs, stop and realign before continuing.
+
+Example debug output to capture:
+"[relevant log line]" → [what it confirms about the hypothesis]
+
+Output: deployment plan (presented first, before execution) + step-by-step reproduction log + debug log snippet confirming the behavior + pass/fail verdict.
+
+[PASTE CUSTOMER HELM VALUES HERE]`,
   },
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5",
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    desc: "Build the escalation — annotate customer impact, validated repro steps, and a clear ask for engineering.",
-    checks: [
-      "Quantify the customer impact (users, revenue, SLA)",
-      "Mark every step that is confirmed in the repro",
-      "State the root cause or best working hypothesis",
-      "Draft a specific, scoped ask for the eng team",
-      "Flag priority level and any deadline",
-    ],
+    prompt: `Stage 5 — Escalation. Reproduction confirmed the bug. Prepare the escalation package.
+
+Complete in order:
+1. State the root cause in one technical sentence
+2. List all evidence with artifact references (file + line, flare file, or screenshot)
+3. State affected versions (confirmed broken + confirmed fixed)
+4. Propose a workaround the customer can apply today
+5. Draft a Jira escalation with: summary, reproduction steps, expected vs actual behavior, evidence references, affected versions, workaround
+
+For each claim in the escalation, cite a specific artifact. No claim without direct evidence.
+
+Example structure:
+- Root cause: [technical one-sentence description]
+- Evidence: [file:line or artifact reference]
+- Affected: [version X confirmed broken · version Y confirmed fixed]
+- Workaround: [actionable step the customer can take today]
+
+Output: root cause / evidence table / affected versions / workaround / Jira draft.
+
+[CUSTOMER ISSUE DESCRIPTION — paste original customer message]
+
+[CONCERN / ISSUE — paste Stage 1 elements table and hypotheses]
+
+[INVESTIGATION — paste Stage 2 artifact findings and trust level updates]
+
+[CODEBASE CORRELATION — paste Stage 3 code evidence and root cause statement]
+
+[REPRODUCTION — paste Stage 4 reproduction log and debug output]`,
   },
 ];
 
@@ -454,7 +550,8 @@ function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [promptBlock, setPromptBlock] = useState(null);
   const [copied, setCopied]           = useState(false);
-  const [activeStage, setActiveStage] = useState(getInitialStage);
+  const [activeStage, setActiveStage]   = useState(getInitialStage);
+  const [copiedStage, setCopiedStage]   = useState(null);
 
   const ELEMENTS = ELEMENTS_BY_MODE[mode];
 
@@ -467,6 +564,13 @@ function App() {
 
   function toggleStage(id) {
     setActiveStage(prev => prev === id ? null : id);
+  }
+
+  function copyPrompt(stage) {
+    navigator.clipboard.writeText(stage.prompt).then(() => {
+      setCopiedStage(stage.id);
+      setTimeout(() => setCopiedStage(null), 2000);
+    });
   }
 
   function handleGenerate() {
@@ -646,14 +750,14 @@ function App() {
                   <div className="stage-title">
                     Stage {STAGES.indexOf(stage) + 1} — {stage.label}
                   </div>
-                  <p className="stage-desc">{stage.desc}</p>
-                  <div className="stage-checklist">
-                    {stage.checks.map((c, i) => (
-                      <div key={i} className="stage-check-item">
-                        <span className="stage-check-dot" />
-                        <span>{c}</span>
-                      </div>
-                    ))}
+                  <div className="stage-prompt-wrap">
+                    <pre className="stage-prompt">{stage.prompt}</pre>
+                    <button
+                      className="stage-copy-btn"
+                      onClick={() => copyPrompt(stage)}
+                    >
+                      {copiedStage === stage.id ? "Copied!" : "Copy"}
+                    </button>
                   </div>
                 </div>
               </div>
