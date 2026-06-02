@@ -251,10 +251,10 @@ const STAGES = [
   {
     id: "triage", label: "Kickoff", alias: ";p_s_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    prompt: `## CONTEXT
+    prompt: `CONTEXT:
 I'm a Datadog TSE2 starting a ticket investigation leveraging AI. I'm working in 5 stages: Kickoff, Investigation, Log/Configuration Codebase Correlation, Reproduction, and Escalation.
 
-## INSTRUCTIONS
+INSTRUCTIONS:
 Using the customer message below, complete in order:
 1. Restate the problem in one sentence
 2. List all investigation elements: Statement, Evidence, Hypothesis
@@ -262,12 +262,12 @@ Using the customer message below, complete in order:
 4. Propose 1-3 initial hypotheses with confidence % (max 30% at this stage). Never modify an existing hypothesis — only add new ones, always at a lower confidence than the current highest.
 5. List every artifact or piece of information still needed to verify each element, and for each one state why it is required
 
-## REASONING
+REASONING:
 For each trust level, quote the exact customer wording that justified it, or write "no evidence yet".
 Do not include Root Cause or Workaround rows — those are determined in later stages.
 Minimum artifact rule: infer artifact candidates from the product area, environment, and symptoms — do not use a fixed list. For each candidate, decide needed or not needed and justify why in one sentence.
 
-## EXAMPLES
+EXAMPLES:
 | Element | Content | Trust | Justification |
 |---------|---------|-------|---------------|
 | Statement | [restate the symptom] | Customer Claim | "[exact customer quote]" |
@@ -278,7 +278,7 @@ Artifact decision table:
 |----------|--------|-----|
 | [artifact type] | YES/NO | [one sentence reason] |
 
-## OUTPUT FORMAT
+OUTPUT FORMAT:
 1-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.
 
 [PASTE CUSTOMER MESSAGE HERE]`,
@@ -286,10 +286,10 @@ Artifact decision table:
   {
     id: "investigation", label: "Investigation", alias: ";p_s_2",
     color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
-    prompt: `## CONTEXT
+    prompt: `CONTEXT:
 Stage 2 — Investigation. Stage 1 identified initial hypotheses. Artifacts are now available.
 
-## INSTRUCTIONS
+INSTRUCTIONS:
 Using the artifacts identified in Stage 1, complete in order:
 1. Examine the configuration artifact: confirm the customer's claimed settings are present
 2. Examine the runtime artifact: confirm the Agent loaded those settings at runtime
@@ -298,15 +298,15 @@ Using the artifacts identified in Stage 1, complete in order:
 5. Update each element's trust level based on direct artifact evidence
 6. Update hypothesis confidence %
 
-## REASONING
+REASONING:
 For each trust level change, quote the exact line from the artifact. Do not change trust without a direct quote.
 
-## EXAMPLES
+EXAMPLES:
 | Finding | Artifact | Quote | Impact on H1 |
 |---------|----------|-------|-------------|
 | [what was found] | [artifact name] | "[exact line]" | Supports/Refutes H1 |
 
-## OUTPUT FORMAT
+OUTPUT FORMAT:
 Updated elements table + evidence table + updated hypothesis confidence % + one key finding sentence.
 
 [ATTACH HELM VALUES AND AGENT FLARE]`,
@@ -314,25 +314,25 @@ Updated elements table + evidence table + updated hypothesis confidence % + one 
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    prompt: `## CONTEXT
+    prompt: `CONTEXT:
 Stage 3 — Log/Configuration Codebase Correlation. Stage 2 confirmed the configuration. Now correlate findings with the Datadog Agent codebase.
 
-## INSTRUCTIONS
+INSTRUCTIONS:
 Complete in order:
 1. Search the datadog-agent GitHub repository for files that implement the relevant filter logic
 2. Find the function or component that defines filter group precedence
 3. Use git blame to identify when the behavior changed and which commit introduced it
 4. Update hypothesis with code evidence
 
-## REASONING
+REASONING:
 For each finding, quote the exact file path + line number + code or comment. Do not paraphrase — direct quote only.
 
-## EXAMPLES
+EXAMPLES:
 | File | Line | Quote | Verdict |
 |------|------|-------|---------|
 | [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
 
-## OUTPUT FORMAT
+OUTPUT FORMAT:
 Code evidence table + updated hypothesis confidence % (expected 70-95%) + one-line root cause statement.
 
 [PASTE STAGE 2 FINDINGS HERE]`,
@@ -340,10 +340,10 @@ Code evidence table + updated hypothesis confidence % (expected 70-95%) + one-li
   {
     id: "reproduction", label: "Reproduction", alias: ";p_s_4",
     color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
-    prompt: `## CONTEXT
+    prompt: `CONTEXT:
 Stage 4 — Reproduction. The hypothesis is confirmed by codebase evidence. Reproduce the issue in minikube.
 
-## INSTRUCTIONS
+INSTRUCTIONS:
 Before anything else:
 1. Clean minikube — remove all pods and deployments. Do not delete secrets or the cluster itself. Retrieve existing API keys from kubectl secrets and reuse them.
 2. Present the full deployment plan (namespaces, pods, Agent config, debug flags) and wait for approval before executing.
@@ -356,13 +356,13 @@ Then complete in order:
 7. Enable Agent debug logging and capture the filter evaluation output
 8. Document each step with the exact command and output
 
-## REASONING
+REASONING:
 Before each step, verify the configuration matches the customer Helm values exactly. If anything differs, stop and realign before continuing.
 
-## EXAMPLES
+EXAMPLES:
 "[relevant log line]" → [what it confirms about the hypothesis]
 
-## OUTPUT FORMAT
+OUTPUT FORMAT:
 Deployment plan (presented first, before execution) + step-by-step reproduction log + debug log snippet confirming the behavior + pass/fail verdict.
 
 [PASTE CUSTOMER HELM VALUES HERE]`,
@@ -370,10 +370,10 @@ Deployment plan (presented first, before execution) + step-by-step reproduction 
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5",
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    prompt: `## CONTEXT
+    prompt: `CONTEXT:
 Stage 5 — Escalation. Reproduction confirmed the bug. Prepare the escalation package.
 
-## INSTRUCTIONS
+INSTRUCTIONS:
 Complete in order:
 1. State the root cause in one technical sentence
 2. List all evidence with artifact references (file + line, flare file, or screenshot)
@@ -381,16 +381,16 @@ Complete in order:
 4. Propose a workaround the customer can apply today
 5. Draft a Jira escalation with: summary, reproduction steps, expected vs actual behavior, evidence references, affected versions, workaround
 
-## REASONING
+REASONING:
 For each claim in the escalation, cite a specific artifact. No claim without direct evidence.
 
-## EXAMPLES
+EXAMPLES:
 - Root cause: [technical one-sentence description]
 - Evidence: [file:line or artifact reference]
 - Affected: [version X confirmed broken · version Y confirmed fixed]
 - Workaround: [actionable step the customer can take today]
 
-## OUTPUT FORMAT
+OUTPUT FORMAT:
 Root cause / evidence table / affected versions / workaround / Jira draft.
 
 [CUSTOMER ISSUE DESCRIPTION — paste original customer message]
@@ -537,7 +537,7 @@ const PILLARS = ["CONTEXT", "INSTRUCTIONS", "REASONING", "EXAMPLES", "OUTPUT FOR
 
 function renderPrompt(text) {
   return text.split("\n").map((line, i, arr) => {
-    const m = line.match(/^## ([A-Z]+)$/);
+    const m = line.match(/^([A-Z][A-Z ]+):$/);
     if (m && PILLARS.includes(m[1])) {
       const cls = m[1].replace(/\s+/g, "_");
       return (
