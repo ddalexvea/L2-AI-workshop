@@ -462,14 +462,14 @@ OUTPUT:
   {
     id: "iterate", label: "Iterate", alias: ";p_s_l3_4",
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    prompt: `The customer has now replied. Their new message is:
-[paste new customer message]
+    prompt: `Review the response draft above.
 
-1. Compare tone and content to the previous message — has sentiment improved, stayed the same, or worsened?
-2. Identify any new signals not present before.
-3. Update the risk level and justify the change.
+1. Check that every signal identified in the annotation is addressed — flag any gap.
+2. Scan for filler phrases ("as per", "please don't hesitate", "I hope this finds you well") and suggest direct replacements.
+3. Check the opening sentence: does it lead with empathy before technical content? If the dominant signal was Negative Sentiment or Urgency, it should.
+4. Propose the single most impactful edit to the draft.
 
-Output: tone comparison (improved / same / worsened) + new signals if any + updated risk level + single most important next action.`,
+Output: signal coverage (addressed / missing per signal) + filler phrases found + opening sentence verdict + one concrete edit.`,
   },
 ];
 
