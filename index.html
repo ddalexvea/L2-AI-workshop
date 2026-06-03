@@ -882,9 +882,9 @@ const STAGE_VISUALS = {
     graphic: () => {
       const C = '#6d28d9';
       const rightRows = [
-        {ic:'Timer',    label:'Timestamp match', sub:'cross-log alignment', bg:'#faf5ff', bc:'#ddd6fe', dot:true},
-        {ic:'FileCode', label:'Source location',  sub:'file + line number',  bg:'#f8fafc', bc:'#e2e8f0', badge:'blame'},
-        {ic:'GitCommitHorizontal', label:'Diff found', sub:'old behavior → new', bg:'#f8fafc', bc:'#e2e8f0', diff:true},
+        {ic:'Timer',    label:'Log correlation',  sub:'timestamps aligned across sources', bg:'#faf5ff', bc:'#ddd6fe', dot:true},
+        {ic:'FileCode', label:'Code location',    sub:'file + line + component',           bg:'#f8fafc', bc:'#e2e8f0', badge:'blame'},
+        {ic:'GitCommitHorizontal', label:'Behavior change', sub:'old vs new — when it shifted', bg:'#f8fafc', bc:'#e2e8f0', diff:true},
       ];
       return (
         <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
@@ -911,7 +911,7 @@ const STAGE_VISUALS = {
           </div>
           {/* Zone 3 — right rows matching left height */}
           <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
-            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>ROOT CAUSE</span>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>FINDINGS</span>
             {rightRows.map((r,i)=>(
               <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:6,borderRadius:5,padding:'0 8px',margin:'2px 0',background:r.bg,border:`1px solid ${r.bc}`}}>
                 <Ic n={r.ic} size={10} color={C}/>
@@ -1182,7 +1182,7 @@ Updated elements table + evidence table + updated hypothesis confidence % + one 
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    steps: ["How do timestamps and error patterns line up across all available log sources?", "Where in the product codebase is the component responsible for this behavior?", "Which rule or function wins when two settings conflict — and when did that change?", "Can I now name the exact root cause with a log line or code reference to back it up?"],
+    steps: ["How do timestamps and error patterns line up across all available log sources?", "Where in the product codebase is the component responsible for this behavior?", "Which rule or function wins when two settings conflict — and when did that change?", "Can I describe the observed behavior precisely, with a log line or code reference to back it up?"],
     canvasVisual: "diff view — DiffView of buggy vs fixed lines with file path in CardHeader and DiffStats in trailing slot, one card per file.",
     htmlVisual: "two-column diff — left=buggy config (red highlight on changed lines), right=fixed (green highlight). File path as section header.",
     promptLight: `INSTRUCTIONS:
@@ -1197,11 +1197,11 @@ REASONING:
 Quote exact source + timestamp or file path + line number for every finding. No paraphrase.
 
 OUTPUT FORMAT:
-Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line root cause statement
+Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line behavior description with code or log reference
 
 [PASTE STAGE 2 FINDINGS HERE]`,
     prompt: `CONTEXT:
-Stage 3 — Artefact Correlation. Stage 2 confirmed the configuration gap. Now cross-correlate all available artifacts (logs, metrics, code) to identify the precise root cause.
+Stage 3 — Artefact Correlation. Stage 2 confirmed the configuration gap. Now cross-correlate all available artifacts (logs, metrics, code) to precisely locate and describe the unexpected behavior.
 
 INSTRUCTIONS:
 Complete in order:
@@ -1227,7 +1227,7 @@ Code evidence:
 | [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
 
 OUTPUT FORMAT:
-Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line root cause statement.
+Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line behavior description with artifact:line citation.
 
 [PASTE STAGE 2 FINDINGS HERE]`,
   },
