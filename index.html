@@ -794,7 +794,16 @@ function buildGamePrompt(metaphor) {
 
 For this entire session, do not use any Datadog, Kubernetes, or technical product names. Translate every concept into the metaphor above.
 
-When I send you an investigation prompt, run it entirely in the metaphor world — same logic, same framework, different vocabulary.`;
+When I send you an investigation prompt, run it entirely in the metaphor world — same logic, same framework, different vocabulary.
+
+Use this investigation framework throughout:
+- Classify the issue type (bug, misconfiguration, expected behavior, etc.) — translated into the metaphor
+- Maintain an Investigation Board with:
+  · Statement — what the customer reports, labelled "Customer Claim"
+  · Evidence — what artefacts confirm, labelled Low / Medium / High trust
+  · Hypotheses — possible causes, each with a confidence % (max 30% at Stage 1)
+- Assign a trust level to every element: Customer Claim · Unverified · Speculative · Low · Medium · High
+- Never raise confidence above 30% without artefact evidence`;
 }
 
 const HTML_SESSION_ROUTING = `WORKSHOP MODE — HTML file only, no chat output.
