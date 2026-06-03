@@ -1238,7 +1238,9 @@ Use this investigation framework throughout:
   · Evidence — what artefacts confirm, labelled Low / Medium / High trust
   · Hypotheses — possible causes, each with a confidence % (max 30% at Stage 1)
 - Assign a trust level to every element: Customer Claim · Unverified · Speculative · Low · Medium · High
-- Never raise confidence above 30% without artefact evidence`;
+- Never raise confidence above 30% without artefact evidence
+
+Citation rule: when a stage prompt says "quote directly" or "no paraphrase", the precision requirement still applies — cite your source. But the source itself must be named and quoted in metaphor language (e.g. "lighthouse manual, section 3" not "agent.log:42"). Accuracy of reasoning is required. Accuracy of vocabulary is forbidden.`;
 }
 
 const HTML_SESSION_ROUTING = `WORKSHOP MODE — HTML file only, no chat output.
