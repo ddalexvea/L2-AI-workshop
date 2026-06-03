@@ -767,147 +767,73 @@ const HV = {
 const STAGE_VISUALS = {
   triage: {
     color:'#2563eb', icon:'SearchCheck',
-    what: 'Read the customer ticket and build a structured view of the problem before touching any artifact.',
-    aiRole: 'AI parses ambiguous customer text into precise board elements, enforces trust levels, caps confidence at 30% without evidence, and proposes hypotheses you might miss.',
-    flow: [
-      {icon:'FileText',  label:'Customer ticket',  color:'#94a3b8'},
-      {icon:'ArrowRight',label:'',                 color:'#e2e8f0'},
-      {icon:'BrainCircuit',label:'AI structures',  color:'#2563eb'},
-      {icon:'ArrowRight',label:'',                 color:'#e2e8f0'},
-      {icon:'LayoutList',label:'Investigation Board', color:'#22c55e'},
+    concept: 'Extract structure from noise — before opening a single artifact.',
+    inputs: [
+      {icon:'FileText',  label:'Customer ticket', sub:'raw, unstructured text'},
     ],
-    output: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:3}}>
-        {[['HIGH','#22c55e','Statement','"symptom in customer words"'],['MED','#f59e0b','Evidence','"direct ticket quote"'],['LOW','#ef4444','Hypothesis','speculative cause']].map(([t,c,l,v],i)=>(
-          <div key={i} style={{display:'flex',alignItems:'center',gap:5,background:'#fff',borderRadius:4,padding:'3px 7px',borderLeft:`3px solid ${c}`}}>
-            <span style={{fontSize:7,fontWeight:700,background:c,color:'#fff',padding:'1px 4px',borderRadius:2,flexShrink:0}}>{t}</span>
-            <span style={{fontSize:8,fontWeight:600,color:'#374151',flexShrink:0,width:68}}>{l}</span>
-            <span style={{fontSize:8,color:'#6b7280',fontStyle:'italic'}}>{v}</span>
-          </div>
-        ))}
-        <div style={{display:'flex',alignItems:'center',gap:5,marginTop:1}}>
-          <span style={{fontSize:7,color:'#374151',width:68,flexShrink:0}}>Confidence</span>
-          <div style={{flex:1,background:'#e2e8f0',borderRadius:3,height:6}}><div style={{width:'20%',background:'#2563eb',height:'100%',borderRadius:3}}/></div>
-          <span style={{fontSize:8,fontWeight:700,color:'#2563eb'}}>≤30%</span>
-        </div>
-      </div>
-    ),
+    actions: [
+      {icon:'SplitSquareHorizontal', text:'Splits into Statement / Evidence / Hypothesis'},
+      {icon:'Shield',                text:'Assigns trust level to each element'},
+      {icon:'TrendingDown',          text:'Caps confidence ≤ 30% — no artifact, no claim'},
+      {icon:'Lightbulb',             text:'Proposes hypotheses you might not see yet'},
+      {icon:'ClipboardList',         text:'Lists what artifacts are needed and why'},
+    ],
   },
   investigation: {
     color:'#15803d', icon:'Microscope',
-    what: 'Load the customer artifacts and compare what was configured against what the product actually loaded at runtime.',
-    aiRole: 'AI cross-compares multiple files simultaneously, spots config-to-runtime gaps humans miss, checks documentation, and updates trust levels only with direct artifact quotes.',
-    flow: [
-      {icon:'FileCode',  label:'Config artifact',  color:'#94a3b8'},
-      {icon:'FileCode',  label:'Runtime dump',     color:'#94a3b8'},
-      {icon:'ArrowRight',label:'',                 color:'#e2e8f0'},
-      {icon:'BrainCircuit',label:'AI correlates',  color:'#15803d'},
-      {icon:'ArrowRight',label:'',                 color:'#e2e8f0'},
-      {icon:'TableProperties',label:'Evidence table', color:'#22c55e'},
+    concept: 'Compare what was configured vs. what actually ran — find the gap.',
+    inputs: [
+      {icon:'FileCode',  label:'Config artifact', sub:'customer-provided'},
+      {icon:'FileCode',  label:'Runtime dump',    sub:'live or captured state'},
+      {icon:'BookOpen',  label:'Documentation',   sub:'official reference'},
     ],
-    output: () => (
-      <div style={{fontSize:8,fontFamily:'monospace'}}>
-        {[['config.yaml','"rule: [X]"','HIGH','H1 ↑'],['runtime dump','"rule: [X,Y]"','MED','gap!'],['docs','"B wins over A"','HIGH','H1 ✓']].map(([a,q,t,h],i)=>(
-          <div key={i} style={{display:'flex',gap:4,padding:'3px 0',borderBottom:'1px solid #f1f5f9'}}>
-            <span style={{color:'#0891b2',width:62,flexShrink:0,overflow:'hidden'}}>{a}</span>
-            <span style={{color:'#6b7280',flex:1,fontStyle:'italic'}}>{q}</span>
-            <span style={{color:t==='HIGH'?'#22c55e':'#f59e0b',width:26,fontWeight:700}}>{t}</span>
-            <span style={{color:'#7c3aed',width:36,fontSize:7}}>{h}</span>
-          </div>
-        ))}
-        <div style={{display:'flex',alignItems:'center',gap:5,marginTop:4}}>
-          <span style={{fontSize:7,color:'#374151',width:62,flexShrink:0}}>Confidence</span>
-          <div style={{flex:1,background:'#e2e8f0',borderRadius:3,height:6}}><div style={{width:'60%',background:'#15803d',height:'100%',borderRadius:3}}/></div>
-          <span style={{fontSize:8,fontWeight:700,color:'#15803d'}}>~60%</span>
-        </div>
-      </div>
-    ),
+    actions: [
+      {icon:'GitCompare',    text:'Cross-compares all files simultaneously'},
+      {icon:'Quote',         text:'Quotes exact artifact lines — no paraphrasing'},
+      {icon:'AlertTriangle', text:'Flags every config ↔ runtime mismatch'},
+      {icon:'TrendingUp',    text:'Updates hypothesis trust levels with evidence'},
+    ],
   },
   artefact: {
     color:'#6d28d9', icon:'GitMerge',
-    what: 'Cross-correlate log timestamps and search the codebase to find exactly where and when the behavior was introduced.',
-    aiRole: 'AI searches GitHub, traces function call paths, runs git blame reasoning, and correlates timestamps across multiple log sources in seconds.',
-    flow: [
-      {icon:'ScrollText', label:'Log files',       color:'#94a3b8'},
-      {icon:'Github',     label:'Codebase',        color:'#94a3b8'},
-      {icon:'ArrowRight', label:'',                color:'#e2e8f0'},
-      {icon:'BrainCircuit',label:'AI traces',      color:'#6d28d9'},
-      {icon:'ArrowRight', label:'',                color:'#e2e8f0'},
-      {icon:'FileDiff',   label:'Root cause',      color:'#22c55e'},
+    concept: 'Pinpoint the exact code location and commit where the behavior lives.',
+    inputs: [
+      {icon:'ScrollText', label:'Log files',  sub:'timestamped component logs'},
+      {icon:'Github',     label:'Codebase',   sub:'source + git history'},
     ],
-    output: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:4}}>
-        <div style={{fontSize:8,fontFamily:'monospace'}}>
-          {[['10:42:01','comp-A','"filter eval start"'],['10:42:01','comp-B','"rule B wins"']].map(([t,s,e],i)=>(
-            <div key={i} style={{display:'flex',gap:4,padding:'2px 0',borderBottom:'1px solid #f1f5f9'}}>
-              <span style={{color:'#94a3b8',flexShrink:0,width:40}}>{t}</span>
-              <span style={{color:'#6d28d9',width:48,flexShrink:0}}>{s}</span>
-              <span style={{color:'#374151',fontStyle:'italic'}}>{e}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{background:'#1e293b',borderRadius:4,padding:'4px 8px'}}>
-          <div style={{fontSize:8,fontFamily:'monospace',color:'#fca5a5'}}>- rule A: allow (overridden)</div>
-          <div style={{fontSize:8,fontFamily:'monospace',color:'#86efac'}}>+ rule B: deny (wins) filter.go:87</div>
-        </div>
-      </div>
-    ),
+    actions: [
+      {icon:'Timer',         text:'Correlates timestamps across all log sources'},
+      {icon:'Search',        text:'Searches and reads relevant source files'},
+      {icon:'Network',       text:'Traces function call paths end-to-end'},
+      {icon:'GitCommitHorizontal', text:'git blame → pinpoints the introducing commit'},
+    ],
   },
   reproduction: {
     color:'#c2410c', icon:'FlaskConical',
-    what: 'Reproduce the confirmed hypothesis in a sandbox environment using the customer\'s exact configuration.',
-    aiRole: 'AI writes the full deployment plan, generates commands, interprets debug output, and confirms whether the symptom matches the hypothesis.',
-    flow: [
-      {icon:'Settings',   label:'Customer config', color:'#94a3b8'},
-      {icon:'ArrowRight', label:'',                color:'#e2e8f0'},
-      {icon:'BrainCircuit',label:'AI executes',    color:'#c2410c'},
-      {icon:'ArrowRight', label:'',                color:'#e2e8f0'},
-      {icon:'CheckCircle2',label:'Verdict',        color:'#22c55e'},
+    concept: 'Verify the hypothesis by reproducing the symptom in a controlled sandbox.',
+    inputs: [
+      {icon:'Settings', label:'Customer config values', sub:'exact values from artifact'},
     ],
-    output: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:3}}>
-        {[['📋','Plan: components · config · debug flags','#64748b'],['✓','Environment set up','#22c55e'],['✓','Exact customer config applied','#22c55e'],['✗','Symptom present → reproduced','#ef4444']].map(([icon,label,c],i)=>(
-          <div key={i} style={{display:'flex',gap:5,fontSize:8,padding:'1px 0'}}>
-            <span style={{fontWeight:700,color:c,width:14,flexShrink:0}}>{icon}</span>
-            <span style={{color:'#6b7280'}}>{label}</span>
-          </div>
-        ))}
-        <div style={{background:'#1e293b',borderRadius:4,padding:'3px 7px',fontSize:7,fontFamily:'monospace',color:'#86efac',marginTop:2}}>"rule B applied: item X skipped" → H1 confirmed</div>
-        <div style={{fontSize:9,fontWeight:700,color:'#ef4444',marginTop:1}}>VERDICT: REPRODUCED ✓</div>
-      </div>
-    ),
+    actions: [
+      {icon:'ListChecks',   text:'Writes full deployment plan + commands'},
+      {icon:'Container',    text:'Spins up environment matching customer setup'},
+      {icon:'Bug',          text:'Applies debug flags and interprets output'},
+      {icon:'CheckCircle2', text:'Delivers REPRODUCED / NOT REPRODUCED verdict'},
+    ],
   },
   escalation: {
     color:'#0f766e', icon:'Send',
-    what: 'Synthesize all findings into a precise, evidence-backed escalation package an engineer can act on immediately.',
-    aiRole: 'AI condenses 4 stages of investigation into a one-sentence root cause, structures evidence citations, and drafts the escalation ticket — no information lost.',
-    flow: [
-      {icon:'Layers',    label:'S1–S4 findings',  color:'#94a3b8'},
-      {icon:'ArrowRight',label:'',                color:'#e2e8f0'},
-      {icon:'BrainCircuit',label:'AI packages',   color:'#0f766e'},
-      {icon:'ArrowRight',label:'',                color:'#e2e8f0'},
-      {icon:'FileCheck', label:'Escalation ticket',color:'#22c55e'},
+    concept: 'Compress 4 stages of investigation into a package an engineer can act on immediately.',
+    inputs: [
+      {icon:'Layers', label:'S1–S4 findings', sub:'all investigation output so far'},
     ],
-    output: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:4}}>
-        <div style={{background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:4,padding:'4px 8px',fontSize:8}}>
-          <span style={{fontWeight:700,color:'#dc2626'}}>Root cause — </span>
-          <span style={{color:'#374151',fontStyle:'italic'}}>rule B overrides rule A (filter.go:87) · item X silently dropped</span>
-        </div>
-        <div style={{display:'flex',gap:4}}>
-          <div style={{flex:1,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:4,padding:'4px 6px',fontSize:8}}>
-            <div style={{fontWeight:700,color:'#475569',marginBottom:1}}>Versions</div>
-            <div style={{color:'#dc2626',fontSize:7}}>Broken: v1.2–v1.4</div>
-            <div style={{color:'#16a34a',fontSize:7}}>Fixed: v1.5</div>
-          </div>
-          <div style={{flex:1,background:'#f0fdf4',border:'1px solid #86efac',borderRadius:4,padding:'4px 6px',fontSize:8}}>
-            <div style={{fontWeight:700,color:'#15803d',marginBottom:1}}>Workaround</div>
-            <div style={{color:'#374151',fontSize:7}}>Remove X from rule B</div>
-          </div>
-        </div>
-        <div style={{fontSize:7,color:'#94a3b8',fontStyle:'italic'}}>+ evidence table · escalation ticket draft</div>
-      </div>
-    ),
+    actions: [
+      {icon:'Target',      text:'One-sentence root cause with artifact:line citation'},
+      {icon:'Table2',      text:'Structured evidence table with trust levels'},
+      {icon:'Tag',         text:'Affected version range + first fixed version'},
+      {icon:'Wrench',      text:'Workaround and customer-facing message'},
+      {icon:'FileCheck',   text:'Complete escalation ticket draft — ready to send'},
+    ],
   },
 };
 
@@ -1720,52 +1646,55 @@ function App() {
                       Stage {stageIndex + 1} — {stage.label}
                     </div>
 
-                    {/* Stage visual — what it is + how AI helps */}
+                    {/* Stage visual — concept + what you give AI vs what AI does */}
                     {STAGE_VISUALS[stage.id] && (() => {
                       const sv = STAGE_VISUALS[stage.id];
                       return (
-                        <div style={{marginBottom:14,border:`1px solid ${sv.color}22`,borderRadius:10,overflow:'hidden'}}>
-                          {/* Header — what this stage does */}
-                          <div style={{background:`${sv.color}0d`,borderBottom:`1px solid ${sv.color}22`,padding:'8px 12px',display:'flex',alignItems:'flex-start',gap:8}}>
-                            <div style={{width:28,height:28,borderRadius:6,background:sv.color,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                              <Ic n={sv.icon} size={14} color="#fff"/>
+                        <div style={{marginBottom:14,border:`1px solid ${sv.color}28`,borderRadius:10,overflow:'hidden'}}>
+                          {/* Concept header */}
+                          <div style={{background:`${sv.color}10`,borderBottom:`1px solid ${sv.color}28`,padding:'8px 12px',display:'flex',alignItems:'center',gap:8}}>
+                            <div style={{width:26,height:26,borderRadius:6,background:sv.color,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                              <Ic n={sv.icon} size={13} color="#fff"/>
                             </div>
-                            <div>
-                              <div style={{fontSize:9,fontWeight:700,color:sv.color,letterSpacing:'0.04em',textTransform:'uppercase',marginBottom:2}}>This stage</div>
-                              <div style={{fontSize:11,color:'#1e293b',lineHeight:1.4}}>{sv.what}</div>
-                            </div>
+                            <span style={{fontSize:12,fontWeight:600,color:'#1e293b',lineHeight:1.3}}>{sv.concept}</span>
                           </div>
-                          {/* AI role */}
-                          <div style={{padding:'8px 12px',borderBottom:`1px solid ${sv.color}22`,display:'flex',alignItems:'flex-start',gap:8}}>
-                            <div style={{width:28,height:28,borderRadius:6,background:'#f1f5f9',border:'1px solid #e2e8f0',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                              <Ic n="BrainCircuit" size={13} color={sv.color}/>
-                            </div>
-                            <div>
-                              <div style={{fontSize:9,fontWeight:700,color:'#64748b',letterSpacing:'0.04em',textTransform:'uppercase',marginBottom:2}}>How AI helps</div>
-                              <div style={{fontSize:11,color:'#334155',lineHeight:1.4}}>{sv.aiRole}</div>
-                            </div>
-                          </div>
-                          {/* Input → AI → Output flow */}
-                          <div style={{padding:'8px 12px',borderBottom:`1px solid ${sv.color}22`}}>
-                            <div style={{fontSize:9,fontWeight:700,color:'#94a3b8',letterSpacing:'0.04em',textTransform:'uppercase',marginBottom:6}}>Flow</div>
-                            <div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap'}}>
-                              {sv.flow.map((f,i)=> f.icon === 'ArrowRight'
-                                ? <Ic key={i} n="ArrowRight" size={10} color="#cbd5e1"/>
-                                : (
-                                  <div key={i} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
-                                    <div style={{width:26,height:26,borderRadius:5,background:`${f.color}18`,border:`1px solid ${f.color}44`,display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                      <Ic n={f.icon} size={12} color={f.color}/>
+                          {/* 2-column body */}
+                          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',borderTop:'none'}}>
+                            {/* Left — You give AI */}
+                            <div style={{padding:'10px 12px',borderRight:`1px solid ${sv.color}20`}}>
+                              <div style={{fontSize:8,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase',color:'#94a3b8',marginBottom:8,display:'flex',alignItems:'center',gap:4}}>
+                                <Ic n="UserCircle2" size={10} color="#94a3b8"/> You give AI
+                              </div>
+                              <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                                {sv.inputs.map((inp,i)=>(
+                                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:6,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:6,padding:'6px 8px'}}>
+                                    <div style={{width:22,height:22,borderRadius:4,background:'#e2e8f0',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                                      <Ic n={inp.icon} size={11} color="#475569"/>
                                     </div>
-                                    <span style={{fontSize:7,color:f.color,fontWeight:600,textAlign:'center',maxWidth:52,lineHeight:1.2}}>{f.label}</span>
+                                    <div>
+                                      <div style={{fontSize:10,fontWeight:600,color:'#334155'}}>{inp.label}</div>
+                                      <div style={{fontSize:9,color:'#94a3b8',marginTop:1}}>{inp.sub}</div>
+                                    </div>
                                   </div>
-                                )
-                              )}
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                          {/* Expected output mini-preview */}
-                          <div style={{padding:'8px 12px'}}>
-                            <div style={{fontSize:9,fontWeight:700,color:'#94a3b8',letterSpacing:'0.04em',textTransform:'uppercase',marginBottom:6}}>Expected output</div>
-                            {sv.output()}
+                            {/* Right — AI does */}
+                            <div style={{padding:'10px 12px',background:`${sv.color}04`}}>
+                              <div style={{fontSize:8,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase',color:sv.color,marginBottom:8,display:'flex',alignItems:'center',gap:4}}>
+                                <Ic n="BrainCircuit" size={10} color={sv.color}/> AI does
+                              </div>
+                              <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                                {sv.actions.map((a,i)=>(
+                                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:6}}>
+                                    <div style={{width:18,height:18,borderRadius:4,background:`${sv.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
+                                      <Ic n={a.icon} size={10} color={sv.color}/>
+                                    </div>
+                                    <span style={{fontSize:10,color:'#374151',lineHeight:1.4}}>{a.text}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       );
