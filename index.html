@@ -939,53 +939,54 @@ const STAGE_VISUALS = {
     concept: 'Verify the hypothesis by reproducing the symptom in a controlled sandbox.',
     graphic: () => {
       const C = '#c2410c';
-      const steps = [
-        {n:1, label:'Setup',   icon:'Server'},
-        {n:2, label:'Config',  icon:'SlidersHorizontal'},
-        {n:3, label:'Run',     icon:'Play'},
+      const leftRows = [
+        {ic:'Server',            label:'Environment'},
+        {ic:'SlidersHorizontal', label:'Config'},
+        {ic:'Crosshair',         label:'Hypothesis'},
+      ];
+      const rightRows = [
+        {label:'env init',    pass:true,  hi:false},
+        {label:'config apply',pass:true,  hi:false},
+        {label:'symptom?',    pass:true,  hi:true},
       ];
       return (
-        <div style={{display:'flex',flexDirection:'column',gap:8,height:120,justifyContent:'center'}}>
-          {/* Pipeline row */}
-          <div style={{display:'flex',alignItems:'center',gap:4}}>
-            {/* Input */}
-            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
-              <div style={{width:34,height:34,borderRadius:7,background:'#fff7ed',border:'1px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                <Ic n="Settings" size={15} color={C}/>
+        <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
+          {/* Zone 1 — sandbox inputs */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:4}}>SANDBOX</span>
+            {leftRows.map((r,i)=>(
+              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,background:'#fff7ed',border:'1px solid #fed7aa',borderRadius:5,padding:'0 7px',margin:'2px 0'}}>
+                <Ic n={r.ic} size={10} color={C}/>
+                <span style={{fontSize:9,color:'#7c2d12',fontWeight:500}}>{r.label}</span>
               </div>
-              <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>Config</span>
-            </div>
-            <Ic n="ChevronRight" size={10} color="#cbd5e1"/>
-            {/* Steps */}
-            {steps.map((s,i)=>(
-              <React.Fragment key={s.n}>
-                <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
-                  <div style={{width:34,height:34,borderRadius:7,background:'#fff7ed',border:'1px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                    <Ic n={s.icon} size={14} color={C}/>
-                  </div>
-                  <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>{s.label}</span>
-                </div>
-                {i<2 && <Ic n="ChevronRight" size={10} color="#cbd5e1"/>}
-              </React.Fragment>
             ))}
-            <Ic n="ChevronRight" size={10} color="#cbd5e1"/>
-            {/* Verdict */}
-            <div style={{flexShrink:0,display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
-              <div style={{background:'#fef2f2',border:`2px solid ${C}`,borderRadius:7,padding:'6px 10px',display:'flex',alignItems:'center',gap:4}}>
-                <Ic n="CheckCircle2" size={12} color={C}/>
-                <span style={{fontSize:9,fontWeight:700,color:'#dc2626'}}>REPRODUCED</span>
-              </div>
-              <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>Verdict</span>
+          </div>
+          {/* Zone 2 — brain */}
+          <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="48" height="120" viewBox="0 0 48 120" style={{position:'absolute',inset:0}}>
+              <line x1="0" y1="40" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="60" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="80" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+            </svg>
+            <div style={{position:'relative',zIndex:1,background:'#fff7ed',border:`2px solid ${C}60`,borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Ic n="BrainCircuit" size={14} color={C}/>
             </div>
           </div>
-          {/* Terminal — semantic output */}
-          <div style={{background:'#1e293b',borderRadius:5,padding:'6px 10px',display:'flex',flexDirection:'column',gap:3}}>
-            {[['#475569',false,'env initialized'],['#475569',false,'config applied'],['#86efac',true,'symptom confirmed → H1 ✓']].map(([col,hi,lbl],i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:5}}>
-                <div style={{width:4,height:4,borderRadius:'50%',background:col,flexShrink:0}}/>
-                <span style={{fontSize:8,fontFamily:'monospace',color:hi?'#86efac':'#64748b'}}>{lbl}</span>
+          {/* Zone 3 — repro results */}
+          <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>RESULTS</span>
+            {rightRows.map((r,i)=>(
+              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 7px',margin:'2px 0',background:r.hi?'#fef2f2':'#f8fafc',border:`1px solid ${r.hi?'#fca5a5':'#e2e8f0'}`}}>
+                <Ic n="CheckCircle2" size={9} color={r.hi?'#dc2626':'#86efac'}/>
+                <span style={{fontSize:8,color:'#334155',fontFamily:'monospace',flex:1}}>{r.label}</span>
+                {r.hi && <span style={{fontSize:7,fontWeight:700,color:'#dc2626',flexShrink:0}}>H1 ✓</span>}
               </div>
             ))}
+            <div style={{display:'flex',alignItems:'center',gap:4,background:'#fef2f2',borderRadius:5,padding:'0 7px',height:24,marginTop:2,border:`1px solid ${C}60`}}>
+              <Ic n="FlaskConical" size={9} color={C}/>
+              <span style={{fontSize:8,fontWeight:700,color:C,flex:1}}>REPRODUCED</span>
+              <div style={{width:6,height:6,borderRadius:'50%',background:'#dc2626',flexShrink:0}}/>
+            </div>
           </div>
         </div>
       );
@@ -1022,20 +1023,18 @@ const STAGE_VISUALS = {
           </div>
           {/* Zone 3 — escalation ticket fields */}
           <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
-            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>ESCALATION TICKET</span>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:2}}>ESCALATION TICKET</span>
             {[
-              {ic:'AlertCircle', label:'Unexpected behavior', bg:'#fef2f2', bc:'#fca5a5', ic_c:'#dc2626'},
-              {ic:'FileCode',    label:'Evidence + artifacts', bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
-              {ic:'ClipboardList', label:'Investigation scope', bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
-              {ic:'Wrench',      label:'Workaround',           bg:'#f0fdfa', bc:'#99f6e4', ic_c:C},
+              {ic:'AlertCircle',   label:'Unexpected behavior',    bg:'#fef2f2', bc:'#fca5a5', ic_c:'#dc2626'},
+              {ic:'FileCode',      label:'Evidence + artifacts',   bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
+              {ic:'ClipboardList', label:'Investigation scope',    bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
+              {ic:'Wrench',        label:'Workaround',             bg:'#f0fdfa', bc:'#99f6e4', ic_c:C},
+              {ic:'TrendingUp',    label:'Impact & urgency',       bg:'#fff7ed', bc:'#fdba74', ic_c:'#ea580c'},
+              {ic:'HelpCircle',    label:'Engineering ask',        bg:'#f0f9ff', bc:'#7dd3fc', ic_c:'#0284c7'},
             ].map((f,i)=>(
-              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 7px',margin:'2px 0',background:f.bg,border:`1px solid ${f.bc}`}}>
-                <Ic n={f.ic} size={10} color={f.ic_c}/>
-                <span style={{fontSize:8,color:'#334155',flex:1,fontWeight:i===0?600:400}}>{f.label}</span>
-                {i===3 && <div style={{display:'flex',gap:3}}>
-                  <div style={{width:5,height:5,borderRadius:'50%',background:'#f87171'}}/>
-                  <div style={{width:5,height:5,borderRadius:'50%',background:'#4ade80'}}/>
-                </div>}
+              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 6px',margin:'1px 0',background:f.bg,border:`1px solid ${f.bc}`}}>
+                <Ic n={f.ic} size={9} color={f.ic_c}/>
+                <span style={{fontSize:7.5,color:'#334155',flex:1,fontWeight:i===0?600:400}}>{f.label}</span>
               </div>
             ))}
           </div>
@@ -1075,6 +1074,8 @@ const STAGE_VISUAL_HINTS = {
     () => <HV.Table cols={['#','Artifact','What it shows']} rows={[['1','component.log:42','symptom present'],['2','config diff','mismatch found'],['3','repro run','confirmed affected']]} />,
     () => <HV.Contrast bad='Unknown / not investigated' good='Affected: vX.Y confirmed · Working: vA.B confirmed (or "not yet determined")' />,
     () => <HV.Table cols={['Area','Investigated','Outcome']} rows={[['Config','✓','mismatch found'],['Runtime','✓','discrepancy confirmed'],['Other hypothesis','✓','ruled out']]} />,
+    () => <HV.Contrast bad='"Customer is frustrated"' good='"Production-blocking · 1 team affected · workaround requires downtime"' />,
+    () => <HV.Contrast bad='"Please look into this"' good='"Ask: confirm this is a bug and provide a config-level workaround or target fix version"' />,
   ],
 };
 
@@ -1282,7 +1283,7 @@ Environment plan (presented first, before execution) + step-by-step reproduction
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5",
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual, with evidence?", "Is every claim backed by a specific artifact reference — no unsupported assertions?", "What versions are confirmed affected, and is there a known fixed version or workaround?", "Have I summarized what was investigated and ruled out, so the engineering team doesn't duplicate work?"],
+    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual, with evidence?", "Is every claim backed by a specific artifact reference — no unsupported assertions?", "What versions are confirmed affected, and is there a known fixed version or workaround?", "Have I summarized what was investigated and ruled out, so the engineering team doesn't duplicate work?", "What is the customer impact and urgency — production-blocking, data risk, or degraded experience?", "What specific action am I requesting from engineering — bug confirmation, fix prioritization, or workaround guidance?"],
     canvasVisual: "summary — Unexpected Behavior (danger Callout) + Affected versions (Stat cards) + Workaround (success Callout) side by side, evidence table with artifact citations below.",
     htmlVisual: "three side-by-side boxes: Unexpected Behavior (red border), Versions (gray border), Workaround (green border). Evidence table with artifact citations below.",
     promptLight: `INSTRUCTIONS:
@@ -1291,14 +1292,17 @@ Stage 5 — prepare the escalation package:
 2. List all evidence with artifact references (file + line, diagnostic artifact, or screenshot)
 3. State affected versions — confirmed affected and confirmed working (if known)
 4. Propose a workaround the customer can apply today, if any
-5. Draft the escalation ticket — summary, reproduction steps, expected vs actual behavior, evidence, affected versions, workaround, investigation summary
+5. Summarize what was investigated and ruled out so engineering doesn't duplicate work
+6. State the customer impact and urgency — is this production-blocking, a data risk, or a degraded experience?
+7. State your specific ask to engineering — bug confirmation, fix prioritization, workaround guidance, or documentation update
+8. Draft the escalation ticket — summary, reproduction steps, expected vs actual behavior, evidence, affected versions, workaround, investigation scope, impact, and ask
 
 REASONING:
 Every claim must cite a specific artifact. No unsupported assertions.
 Do not claim a root cause — describe the observed behavior and leave root cause analysis to the engineering team.
 
 OUTPUT FORMAT:
-Unexpected behavior / evidence table / affected versions / workaround / escalation draft
+Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft
 
 [CUSTOMER ISSUE — paste original customer message]
 [INVESTIGATION — paste Stage 1–4 findings]`,
@@ -1312,11 +1316,14 @@ Complete in order:
 3. State affected versions (confirmed affected + confirmed working if known)
 4. Propose a workaround the customer can use today, if any exists
 5. Summarize what was investigated and ruled out during Stages 1–4
-6. Draft an escalation ticket with: summary, reproduction steps, expected vs actual behavior, evidence table, affected versions, workaround, investigation scope
+6. State the customer impact and urgency: is this production-blocking, a data-loss risk, or a degraded-experience issue? How many customers are affected?
+7. State the specific action you need from engineering: bug confirmation, fix prioritization, workaround guidance, or documentation update — be explicit
+8. Draft the escalation ticket with: summary, reproduction steps, expected vs actual behavior, evidence table, affected versions, workaround, investigation scope, customer impact, and engineering ask
 
 REASONING:
 For each claim, cite a specific artifact. No assertion without direct evidence.
 The escalation describes the behavior — root cause determination is the engineering team's responsibility.
+A clear engineering ask prevents back-and-forth and helps the team act immediately.
 
 EXAMPLES:
 - Unexpected behavior: [expected X, observed Y — cite artifact]
@@ -1324,9 +1331,11 @@ EXAMPLES:
 - Affected: [version X confirmed affected · version Y confirmed working]
 - Workaround: [actionable step the customer can take today, or "none identified"]
 - Investigated and ruled out: [list of hypotheses eliminated with evidence]
+- Impact: [production-blocking / degraded experience / data risk — N customers affected]
+- Engineering ask: [confirm this is a bug and prioritize a fix / provide a config-level workaround / clarify expected behavior in docs]
 
 OUTPUT FORMAT:
-Unexpected behavior / evidence table / affected versions / workaround / investigation scope / escalation draft.
+Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft.
 
 [CUSTOMER ISSUE DESCRIPTION — paste original customer message]
 [CONCERN / ISSUE — paste Stage 1 elements table and hypotheses]
