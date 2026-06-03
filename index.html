@@ -435,7 +435,7 @@ const L2_STAGES = [
   {
     id: "triage", label: "Kickoff", alias: ";p_s_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    steps: ["Restate the problem in one sentence", "Classify the issue type", "Assign trust levels to each element", "Identify missing artefacts", "Propose hypotheses with confidence %"],
+    steps: ["Restate the problem in one sentence", "List elements — Statement, Evidence, Hypothesis — with a trust level for each", "Propose 1–3 hypotheses with confidence % (max 30%)", "For each element and hypothesis — what artifact would confirm or refute it?"],
     canvasVisual: "heatmap — rows=hypotheses, cols=artifacts needed, filled dot=confirmed, empty=needed. All dots start empty.",
     htmlVisual: "heatmap grid table — rows=hypotheses, cols=artifacts. Green cell ●=confirmed, gray cell ○=needed.",
     promptLight: `Restate the customer problem in one sentence.
@@ -476,7 +476,7 @@ OUTPUT FORMAT:
   {
     id: "investigation", label: "Investigation", alias: ";p_s_2",
     color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
-    steps: ["Config written vs config loaded", "Check Datadog docs for known settings", "Update trust and confidence per finding", "Search similar past tickets", "Check Jira for known bugs"],
+    steps: ["Confirm settings are present in the config artifact", "Confirm the Agent loaded those settings at runtime", "Note any gap between config written and config loaded", "Check official docs for the interaction between the relevant settings", "Update trust levels and hypothesis confidence % with direct quotes"],
     canvasVisual: "evidence tracker — rows=findings, columns=[Artifact, Quote, Trust before, Trust after, H impact]. rowTone: success=upgraded, danger=refuted, neutral=unchanged.",
     htmlVisual: "evidence table — green row=trust upgraded, red row=refuted, gray=unchanged. Columns: Artifact | Quote | Trust Before | Trust After | H Impact.",
     promptLight: `Review the attached artifacts.
