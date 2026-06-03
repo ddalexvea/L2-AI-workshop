@@ -247,7 +247,7 @@
 const { useState } = React;
 
 /* ── Stage definitions ─────────────────────────────────── */
-const STAGES = [
+const L2_STAGES = [
   {
     id: "triage", label: "Kickoff", alias: ";p_s_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
@@ -401,6 +401,80 @@ Root cause / evidence table / affected versions / workaround / Jira draft.
   },
 ];
 
+const L3_STAGES = [
+  {
+    id: "evaluate", label: "Evaluate", alias: ";p_s_l3_1",
+    color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
+    prompt: `[PASTE ANNOTATED BLOCK FROM TOOL ABOVE]
+
+You are a Datadog TSE2 evaluating a customer message before writing a response.
+The annotated message above is your input.
+
+1. Identify the dominant signal in the message (Sentiment / Urgency / Business Impact / Unmet Expectation / Escalation Signal).
+2. Before rating risk, state which signals led you to your assessment.
+3. Rate the overall risk level: Low / Medium / High.
+
+Example of expected output:
+Dominant signal: Escalation Signal
+Reasoning: Customer explicitly mentions involving their AE and references 2 weeks of no progress.
+Risk level: High
+
+Output: dominant signal + one-sentence reasoning + risk level.`,
+  },
+  {
+    id: "stakeholder", label: "Stakeholder Check", alias: ";p_s_l3_2",
+    color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
+    prompt: `Based on the message you just evaluated:
+
+1. Think through: escalation signals present, business impact stated, SLA exposure.
+2. State your assumption about the customer's next action if no escalation happens.
+3. Output: Yes or No for stakeholder involvement, and the single reason that tipped the decision.`,
+  },
+  {
+    id: "draft", label: "Draft Response", alias: ";p_s_l3_3",
+    color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
+    prompt: `CONTEXT:
+You are a Datadog TSE2 writing a customer-facing response on behalf of the support team.
+The customer is reaching out via an async support ticket. Your team operates async-first;
+phone/video calls require TL approval. The annotated message and risk assessment from the
+previous steps are your context.
+
+INSTRUCTIONS:
+1. List the key points from the customer message that must be addressed, in priority order.
+2. For each key point, identify the appropriate response action: acknowledge / clarify / commit / redirect.
+3. State your assumption about the customer's current emotional state and how the tone should reflect it.
+4. Draft the response covering all key points — one paragraph per key point.
+
+EXAMPLES:
+Well-structured key point:
+  "Customer mentions 2 weeks without progress -> acknowledge (own the delay) + commit (concrete next step with a date)"
+Tone to avoid:
+  "As per my previous email", "Please don't hesitate to reach out", "I hope this email finds you well"
+
+REASONING:
+Before drafting, state what the customer needs most right now and how that shapes the tone
+of the response.
+
+OUTPUT:
+- Key points list (numbered, with action label per point)
+- Response draft (one paragraph per point, professional and empathetic)`,
+  },
+  {
+    id: "iterate", label: "Iterate", alias: ";p_s_l3_4",
+    color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
+    prompt: `The customer has now replied. Their new message is:
+[paste new customer message]
+
+1. Compare tone and content to the previous message — has sentiment improved, stayed the same, or worsened?
+2. Identify any new signals not present before.
+3. Update the risk level and justify the change.
+
+Output: tone comparison (improved / same / worsened) + new signals if any + updated risk level + single most important next action.`,
+  },
+];
+
+const STAGES_BY_MODE = { L2: L2_STAGES, L3: L3_STAGES };
+
 /* ── Elements by mode ──────────────────────────────────── */
 const L2_ELEMENTS = [
   { id: "statement",  label: "Statement",    tone: "info" },
@@ -551,7 +625,8 @@ function renderPrompt(text) {
 function getInitialStage() {
   try {
     const p = new URLSearchParams(window.location.search).get("stage");
-    if (p && STAGES.find(s => s.id === p)) return p;
+    const allStages = [...L2_STAGES, ...L3_STAGES];
+    if (p && allStages.find(s => s.id === p)) return p;
   } catch (_) {}
   return null;
 }
@@ -572,6 +647,7 @@ function App() {
   const [copiedStage, setCopiedStage]   = useState(null);
 
   const ELEMENTS = ELEMENTS_BY_MODE[mode];
+  const STAGES   = STAGES_BY_MODE[mode];
 
   function switchMode(m) {
     if (m === mode) return;
@@ -634,7 +710,7 @@ function App() {
           <button className={`mode-btn${mode === "L2" ? " active" : ""}`} onClick={() => switchMode("L2")}>L2</button>
           <button className={`mode-btn${mode === "L3" ? " active" : ""}`} onClick={() => switchMode("L3")}>L3</button>
         </div>
-        <span className="mode-label">{mode === "L2" ? "Technical Ticket Annotation" : "DSAT Annotation"}</span>
+        <span className="mode-label">{mode === "L2" ? "Technical Ticket Annotation" : "Customer-Facing Response"}</span>
       </div>
 
       {/* ── Editing panel ── */}
