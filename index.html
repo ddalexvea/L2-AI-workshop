@@ -999,8 +999,8 @@ function App() {
           </>
         )}
 
-        {/* Editing || Content */}
-        {editing ? (
+        {/* Editing || Content — hidden on Preparation step */}
+        {activeStage !== "prep" && editing ? (
           <>
             <textarea
               className="paste-area"
