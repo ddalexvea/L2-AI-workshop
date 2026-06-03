@@ -1868,8 +1868,8 @@ function App() {
               </div>
             )}
 
-            {/* ── Active stage content ── */}
-            {activeStageObj && (() => {
+            {/* ── Active stage content — in Stage 1, only shown when palette is open ── */}
+            {activeStageObj && (activeStage !== 'triage' || paletteOpen) && (() => {
               const stage = activeStageObj;
               const stageIndex = STAGES.indexOf(stage);
               const atts = STAGE_ATTACHMENTS[stage.id];
