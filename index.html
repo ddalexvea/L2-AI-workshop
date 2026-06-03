@@ -25,20 +25,33 @@
       display: flex; flex-direction: column; gap: 2px;
       padding: 0 10px 32px 0;
       position: sticky; top: 32px;
+      transition: width 0.18s ease;
     }
+    .sidebar.collapsed { width: 40px; }
     .sidebar-header {
       font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
       text-transform: uppercase; color: #94a3b8;
       padding: 2px 12px 10px 12px;
+      white-space: nowrap; overflow: hidden;
     }
+    .sidebar.collapsed .sidebar-header { display: none; }
+    .sidebar-toggle {
+      cursor: pointer; border: none; background: transparent;
+      color: #94a3b8; padding: 4px 6px; border-radius: 4px;
+      font-size: 13px; line-height: 1; margin-bottom: 4px;
+      align-self: flex-start; transition: color 0.12s;
+    }
+    .sidebar-toggle:hover { color: #475569; }
     .sidebar-stage {
       cursor: pointer; display: flex; align-items: center; gap: 8px;
       padding: 7px 12px; border: none; background: transparent;
       border-radius: 6px; text-align: left; width: 100%;
       transition: background 0.12s; border-left: 3px solid transparent;
     }
+    .sidebar.collapsed .sidebar-stage { padding: 7px; justify-content: center; border-left: none; }
     .sidebar-stage:hover { background: #f1f5f9; }
     .sidebar-stage.active { background: #eff6ff; border-left-color: #2563eb; }
+    .sidebar.collapsed .sidebar-stage.active { border-left: none; }
     .sidebar-num {
       width: 20px; height: 20px; border-radius: 999px;
       display: inline-flex; align-items: center; justify-content: center;
@@ -49,8 +62,39 @@
     .sidebar-stage.active .sidebar-num { background: #2563eb; color: #fff; }
     .sidebar-label {
       font-size: 12px; font-weight: 500; color: #64748b; line-height: 1.3;
+      white-space: nowrap; overflow: hidden;
     }
+    .sidebar.collapsed .sidebar-label { display: none; }
     .sidebar-stage.active .sidebar-label { color: #1d4ed8; font-weight: 600; }
+
+    /* Prep panel */
+    .prep-panel {
+      border: 1.5px solid #8b5cf6; border-radius: 10px;
+      background: #faf5ff; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .prep-panel-title { font-size: 14px; font-weight: 700; color: #5b21b6; }
+    .prep-hint { font-size: 12px; color: #6d28d9; line-height: 1.5; }
+    .prep-block {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .prep-block-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; color: #7c3aed;
+    }
+    .prep-routing {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px; line-height: 1.65; white-space: pre-wrap;
+      background: #fff; border: 1px solid #ddd6fe; border-radius: 6px;
+      padding: 12px 14px; color: #1f2328; position: relative;
+    }
+    .prep-copy-btn {
+      cursor: pointer; background: #7c3aed; color: #fff;
+      border: none; border-radius: 6px;
+      padding: 5px 14px; font-size: 11px; font-weight: 700;
+      align-self: flex-start; transition: background 0.15s;
+    }
+    .prep-copy-btn:hover { background: #5b21b6; }
 
     /* Main area */
     .main {
@@ -817,20 +861,66 @@ HTML hard rules:
 `;
 }
 
+/* ── Session-level routing (paste once at start) ──────── */
+const CANVAS_SESSION_ROUTING = `WORKSHOP MODE — canvas only, no chat output.
+Rules for this session:
+- Do NOT output the analysis in chat. All content goes in the canvas file only.
+- In chat, respond only with: "Canvas ready — open stage-N.canvas.tsx" (replace N with the stage number).
+- Canvas target: fits on a single screen, max 3 bullet points per section, max 4 table rows, one bold takeaway line at the bottom.
+
+Canvas: for each prompt I send, create a Cursor canvas at
+~/.cursor/projects/Users-alexandre-vea-Projects-TSE/canvases/stage-N.canvas.tsx
+(replace N with the stage number) using this visual per stage:
+- Stage 1: heatmap — rows=hypotheses, cols=artifacts needed, filled dot=confirmed, empty=needed. All dots start empty.
+- Stage 2: evidence tracker — rows=findings, columns=[Artifact, Quote, Trust before, Trust after, H impact], rowTone: success=upgraded, danger=refuted, neutral=unchanged
+- Stage 3: diff view — DiffView of buggy vs fixed lines with file path in CardHeader and DiffStats in trailing slot, one card per file
+- Stage 4: timeline — one dot per repro step (rowTone success=pass, danger=fail, neutral=skipped), final row=VERDICT in bold
+- Stage 5: summary — Root Cause (danger Callout) + Affected versions (Stat cards) + Workaround (success Callout) side by side, evidence table with file:line citations below
+
+Canvas hard rules — must follow exactly:
+- No hardcoded hex colors. Only useHostTheme() tokens (call it inside every component that needs it).
+- Valid token paths: theme.accent.primary · theme.fill.primary/secondary/tertiary/quaternary
+  theme.stroke.primary/secondary/tertiary · theme.text.primary/secondary/tertiary/onAccent
+  theme.bg.editor/chrome/elevated · theme.diff.stripAdded (green) · theme.diff.stripRemoved (red)
+- Table rowTone valid values only: "success" | "danger" | "warning" | "info" | "neutral" — never "pass" or "fail"
+- Pill tone valid values only: "neutral" | "added" | "deleted" | "renamed" | "success" | "warning" | "info"
+- No box-shadow, no gradients, no emoji as decoration, no hardcoded font sizes above 24px.`;
+
+const HTML_SESSION_ROUTING = `WORKSHOP MODE — HTML file only, no chat output.
+Rules for this session:
+- Write a single self-contained HTML file to ~/Desktop/workshop/stage-N.html (replace N with stage number)
+- After writing, run: open ~/Desktop/workshop/stage-N.html
+- In chat respond only with: "Stage N ready — check Chrome"
+- Single screen layout, max 3 bullets per section, max 4 table rows, one bold takeaway at bottom
+
+Visual per stage:
+- Stage 1: heatmap grid table — rows=hypotheses, cols=artifacts. Green cell ●=confirmed, gray cell ○=needed.
+- Stage 2: evidence table — green row=trust upgraded, red row=refuted, gray=unchanged. Columns: Artifact | Quote | Trust Before | Trust After | H Impact.
+- Stage 3: two-column diff — left=buggy config (red highlight on changed lines), right=fixed (green highlight). File path as section header.
+- Stage 4: numbered step list — ✓ green=pass, ✗ red=fail per step. VERDICT in large bold at bottom inside green or red bordered box.
+- Stage 5: three side-by-side boxes: Root Cause (red border), Versions (gray border), Workaround (green border). Evidence table with file:line citations below.
+
+HTML hard rules:
+- Self-contained: inline CSS only, no external dependencies
+- Colors: white background, dark text, green=#22c55e red=#ef4444 amber=#f59e0b gray=#94a3b8
+- Tables: alternating row shading (#f8fafc), colored row left-border for status
+- Font: system-ui, 13px body, bold section headers`;
+
 /* ── App ───────────────────────────────────────────────── */
 function App() {
-  const [raw, setRaw]                 = useState(DEFAULT_TEXT);
-  const [lines, setLines]             = useState(() => parseText(DEFAULT_TEXT));
-  const [editing, setEditing]         = useState(false);
-  const [tags, setTags]               = useState({});
-  const [dragging, setDragging]       = useState(null);
-  const [over, setOver]               = useState(null);
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const [promptBlock, setPromptBlock] = useState(null);
-  const [copied, setCopied]           = useState(false);
-  const [activeStage, setActiveStage] = useState(getInitialStage);
-  const [copiedStage, setCopiedStage] = useState(null);
-  const [tool, setTool]               = useState("cursor"); // "cursor" | "claude"
+  const [raw, setRaw]                     = useState(DEFAULT_TEXT);
+  const [lines, setLines]                 = useState(() => parseText(DEFAULT_TEXT));
+  const [editing, setEditing]             = useState(false);
+  const [tags, setTags]                   = useState({});
+  const [dragging, setDragging]           = useState(null);
+  const [over, setOver]                   = useState(null);
+  const [paletteOpen, setPaletteOpen]     = useState(false);
+  const [promptBlock, setPromptBlock]     = useState(null);
+  const [copied, setCopied]               = useState(false);
+  const [activeStage, setActiveStage]     = useState(getInitialStage);
+  const [copiedStage, setCopiedStage]     = useState(null);
+  const [tool, setTool]                   = useState("cursor"); // "cursor" | "claude"
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   function toggleStage(id) {
     setActiveStage(prev => prev === id ? null : id);
@@ -892,8 +982,24 @@ function App() {
     <div className="app">
 
       {/* ── Left sidebar ── */}
-      <div className="sidebar">
+      <div className={`sidebar${sidebarCollapsed ? " collapsed" : ""}`}>
+        <button
+          className="sidebar-toggle"
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          onClick={() => setSidebarCollapsed(p => !p)}
+        >
+          {sidebarCollapsed ? "›" : "‹"}
+        </button>
         <div className="sidebar-header">L2</div>
+        {/* Preparation step */}
+        <button
+          className={`sidebar-stage${activeStage === "prep" ? " active" : ""}`}
+          onClick={() => setActiveStage(prev => prev === "prep" ? null : "prep")}
+          title="Workshop Preparation"
+        >
+          <span className="sidebar-num" style={activeStage === "prep" ? { background: "#7c3aed", color: "#fff" } : { background: "#ede9fe", color: "#6d28d9" }}>⚙</span>
+          <span className="sidebar-label">Preparation</span>
+        </button>
         {STAGES.map((stage, i) => (
           <button
             key={stage.id}
@@ -909,14 +1015,41 @@ function App() {
       {/* ── Main area ── */}
       <div className="main">
 
-        {/* Tool toggle */}
-        <div className="row" style={{ gap: 10 }}>
-          <div className="tool-bar">
-            <button className={`tool-btn${tool === "cursor" ? " active" : ""}`} onClick={() => setTool("cursor")}>⬡ Cursor Canvas</button>
-            <button className={`tool-btn${tool === "claude" ? " active" : ""}`} onClick={() => setTool("claude")}>◈ Claude HTML</button>
-          </div>
-          <span className="tool-hint">Complete prompts include {tool === "cursor" ? "Cursor canvas routing" : "Claude HTML routing"}</span>
-        </div>
+        {/* Preparation panel */}
+        {activeStage === "prep" && (
+          <>
+            <div className="prep-panel">
+              <div className="prep-panel-title">Workshop Preparation</div>
+              <p className="prep-hint">Paste this prompt <strong>once</strong> at the start of your Cursor or Claude session. The AI will remember the routing rules for all 5 stages.</p>
+
+              {/* Tool toggle inside prep */}
+              <div className="row" style={{ gap: 10 }}>
+                <div className="tool-bar">
+                  <button className={`tool-btn${tool === "cursor" ? " active" : ""}`} onClick={() => setTool("cursor")}>⬡ Cursor Canvas</button>
+                  <button className={`tool-btn${tool === "claude" ? " active" : ""}`} onClick={() => setTool("claude")}>◈ Claude HTML</button>
+                </div>
+              </div>
+
+              <div className="prep-block">
+                <div className="prep-block-label">{tool === "cursor" ? "Cursor Canvas — session routing" : "Claude Code — session routing"}</div>
+                <div className="prep-routing">{tool === "cursor" ? CANVAS_SESSION_ROUTING : HTML_SESSION_ROUTING}</div>
+                <button
+                  className="prep-copy-btn"
+                  onClick={() => {
+                    const text = tool === "cursor" ? CANVAS_SESSION_ROUTING : HTML_SESSION_ROUTING;
+                    navigator.clipboard.writeText(text).then(() => {
+                      setCopiedStage("prep");
+                      setTimeout(() => setCopiedStage(null), 2000);
+                    });
+                  }}
+                >
+                  {copiedStage === "prep" ? "Copied!" : (tool === "cursor" ? "Copy for Cursor" : "Copy for Claude")}
+                </button>
+              </div>
+            </div>
+            <hr className="divider" />
+          </>
+        )}
 
         {/* Editing || Content */}
         {editing ? (
@@ -1068,8 +1201,11 @@ function App() {
                       </details>
                     )}
                     {stage.promptLight && (
-                      <div className="prompt-version-label">
-                        Complete version — {tool === "cursor" ? "Cursor Canvas" : "Claude HTML"}
+                      <div className="prompt-version-label" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span>Complete version — {tool === "cursor" ? "⬡ Cursor Canvas" : "◈ Claude HTML"}</span>
+                        <span className="tool-hint" style={{ fontStyle: "normal" }}>
+                          · routing included · <button style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 10, color: "#2563eb", fontWeight: 600 }} onClick={() => setActiveStage("prep")}>change tool</button>
+                        </span>
                       </div>
                     )}
                     <div className="stage-prompt-wrap">
