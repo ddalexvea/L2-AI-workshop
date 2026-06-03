@@ -405,21 +405,32 @@ const L3_STAGES = [
   {
     id: "evaluate", label: "Evaluate", alias: ";p_s_l3_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    prompt: `You are a Datadog TSE2 evaluating a customer message before writing a response.
+    prompt: `CONTEXT:
+You are a Datadog TSE2 evaluating a customer message before writing a response.
 The annotated message above is your input.
 
+INSTRUCTIONS:
 1. Identify the dominant signal in the message (Sentiment / Urgency / Business Impact / Unmet Expectation / Escalation Signal).
-2. Before rating risk, state which signals led you to your assessment.
+2. State which signals led you to your risk assessment.
 3. Rate the overall risk level: Low / Medium / High.
 4. If risk is Medium or High: state whether stakeholder involvement is needed and the single reason that tipped the decision.
 
-Example of expected output:
+EXAMPLES:
 Dominant signal: Escalation Signal
 Reasoning: Customer explicitly mentions involving their AE and references 2 weeks of no progress.
 Risk level: High
 Stakeholder involvement: Yes — customer has stated intent to escalate to their AE.
 
-Output: dominant signal + one-sentence reasoning + risk level + stakeholder decision (if risk Medium/High).`,
+REASONING:
+Before rating risk, identify every signal present — do not anchor on the most obvious one.
+A message can carry Urgency without Escalation Signal, or Negative Sentiment without Business Impact.
+State each signal you detected before assigning a risk level.
+
+OUTPUT FORMAT:
+- Dominant signal
+- One-sentence reasoning
+- Risk level (Low / Medium / High)
+- Stakeholder decision (only if risk is Medium or High)`,
   },
   {
     id: "draft", label: "Draft", alias: ";p_s_l3_2",
@@ -453,14 +464,31 @@ OUTPUT:
   {
     id: "criticize", label: "Criticize", alias: ";p_s_l3_3",
     color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
-    prompt: `Review the response draft above.
+    prompt: `CONTEXT:
+You are a Datadog TSE2 reviewing a response draft before sending.
+The draft above and the annotated customer message are your inputs.
 
+INSTRUCTIONS:
 1. Check that every signal identified in the annotation is addressed — flag any gap.
 2. Scan for filler phrases ("as per", "please don't hesitate", "I hope this finds you well") and suggest direct replacements.
 3. Check the opening sentence: does it lead with empathy before technical content? If the dominant signal was Negative Sentiment or Urgency, it should.
 4. Propose the single most impactful edit to the draft.
 
-Output: signal coverage (addressed / missing per signal) + filler phrases found + opening sentence verdict + one concrete edit.`,
+EXAMPLES:
+Signal gap: "Escalation Signal detected in annotation but no explicit acknowledgment of escalation path in draft."
+Filler phrase: "Please don't hesitate to reach out" → "Reply here and I will get back to you within [time]."
+Opening sentence: "Opens with technical content — should open with empathy given Negative Sentiment signal."
+
+REASONING:
+Before proposing any edit, check signal coverage first.
+A draft that misses a signal is worse than one with filler phrases.
+The single most impactful edit is the one that closes the largest signal gap or removes the most damaging filler.
+
+OUTPUT FORMAT:
+- Signal coverage (addressed / missing per signal)
+- Filler phrases found (original → suggested replacement)
+- Opening sentence verdict
+- One concrete edit`,
   },
 ];
 
