@@ -846,7 +846,7 @@ function App() {
   const [paletteOpen, setPaletteOpen]     = useState(false);
   const [promptBlock, setPromptBlock]     = useState(null);
   const [copied, setCopied]               = useState(false);
-  const [activeStage, setActiveStage]     = useState(getInitialStage);
+  const [activeStage, setActiveStage]     = useState(() => getInitialStage() ?? "prep");
   const [copiedStage, setCopiedStage]     = useState(null);
   const [tool, setTool]                   = useState("cursor"); // "cursor" | "claude" | "game"
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
