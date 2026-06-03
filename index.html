@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ticket Annotator — L2 / L3</title>
+  <title>Ticket Annotator — L2 Investigation</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -460,107 +460,8 @@ Root cause / evidence table / affected versions / workaround / Jira draft.
   },
 ];
 
-const L3_STAGES = [
-  {
-    id: "evaluate", label: "Evaluate", alias: ";p_s_l3_1",
-    color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
-    promptLight: `Read the customer message above.
-What is the dominant signal? What is the risk level: Low / Medium / High?`,
-    prompt: `CONTEXT:
-You are a Datadog TSE2 evaluating a customer message before writing a response.
-The annotated message above is your input.
-
-INSTRUCTIONS:
-1. Identify the dominant signal in the message (Sentiment / Urgency / Business Impact / Unmet Expectation / Escalation Signal).
-2. State which signals led you to your risk assessment.
-3. Rate the overall risk level: Low / Medium / High.
-4. If risk is Medium or High: state whether stakeholder involvement is needed and the single reason that tipped the decision.
-
-EXAMPLES:
-Dominant signal: Escalation Signal
-Reasoning: Customer explicitly mentions involving their AE and references 2 weeks of no progress.
-Risk level: High
-Stakeholder involvement: Yes — customer has stated intent to escalate to their AE.
-
-REASONING:
-Before rating risk, identify every signal present — do not anchor on the most obvious one.
-A message can carry Urgency without Escalation Signal, or Negative Sentiment without Business Impact.
-State each signal you detected before assigning a risk level.
-
-OUTPUT FORMAT:
-- Dominant signal
-- One-sentence reasoning
-- Risk level (Low / Medium / High)
-- Stakeholder decision (only if risk is Medium or High)`,
-  },
-  {
-    id: "draft", label: "Draft", alias: ";p_s_l3_2",
-    color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    promptLight: `Write a response to the customer message above.
-Be professional, empathetic, and direct. Address each concern in priority order. No filler phrases.`,
-    prompt: `CONTEXT:
-You are a Datadog TSE2 writing a customer-facing response on behalf of the support team.
-The customer is reaching out via an async support ticket. Your team operates async-first;
-phone/video calls require TL approval. The annotated message and risk assessment from the
-previous steps are your context.
-
-INSTRUCTIONS:
-1. List the key points from the customer message that must be addressed, in priority order.
-2. For each key point, identify the appropriate response action: acknowledge / clarify / commit / redirect.
-3. State your assumption about the customer's current emotional state and how the tone should reflect it.
-4. Draft the response covering all key points — one paragraph per key point.
-
-EXAMPLES:
-Well-structured key point:
-  "Customer mentions 2 weeks without progress -> acknowledge (own the delay) + commit (concrete next step with a date)"
-Tone to avoid:
-  "As per my previous email", "Please don't hesitate to reach out", "I hope this email finds you well"
-
-REASONING:
-Before drafting, state what the customer needs most right now and how that shapes the tone
-of the response.
-
-OUTPUT:
-- Key points list (numbered, with action label per point)
-- Response draft (one paragraph per point, professional and empathetic)`,
-  },
-  {
-    id: "criticize", label: "Criticize", alias: ";p_s_l3_3",
-    color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
-    promptLight: `Review the response draft above.
-What signal is missing? Any filler phrases? What is the single best edit?`,
-    prompt: `CONTEXT:
-You are a Datadog TSE2 reviewing a response draft before sending.
-The draft above and the annotated customer message are your inputs.
-
-INSTRUCTIONS:
-1. Check that every signal identified in the annotation is addressed — flag any gap.
-2. Scan for filler phrases ("as per", "please don't hesitate", "I hope this finds you well") and suggest direct replacements.
-3. Check the opening sentence: does it lead with empathy before technical content? If the dominant signal was Negative Sentiment or Urgency, it should.
-4. Propose the single most impactful edit to the draft.
-
-EXAMPLES:
-Signal gap: "Escalation Signal detected in annotation but no explicit acknowledgment of escalation path in draft."
-Filler phrase: "Please don't hesitate to reach out" → "Reply here and I will get back to you within [time]."
-Opening sentence: "Opens with technical content — should open with empathy given Negative Sentiment signal."
-
-REASONING:
-Before proposing any edit, check signal coverage first.
-A draft that misses a signal is worse than one with filler phrases.
-The single most impactful edit is the one that closes the largest signal gap or removes the most damaging filler.
-
-OUTPUT FORMAT:
-- Signal coverage (addressed / missing per signal)
-- Filler phrases found (original → suggested replacement)
-- Opening sentence verdict
-- One concrete edit`,
-  },
-];
-
-const STAGES_BY_MODE = { L2: L2_STAGES, L3: L3_STAGES };
-
-/* ── Elements by mode ──────────────────────────────────── */
-const L2_ELEMENTS = [
+/* ── Elements ──────────────────────────────────────────── */
+const ELEMENTS = [
   { id: "statement",  label: "Statement",    tone: "info" },
   { id: "evidence",   label: "Evidence",     tone: "success" },
   { id: "hypothesis", label: "Hypothesis",   tone: "warning" },
@@ -569,16 +470,7 @@ const L2_ELEMENTS = [
   { id: "next_step",  label: "Next Step",    tone: "info" },
 ];
 
-const L3_ELEMENTS = [
-  { id: "sentiment",  label: "Sentiment",         tone: "danger" },
-  { id: "unmet",      label: "Unmet Expectation", tone: "warning" },
-  { id: "impact",     label: "Impact",            tone: "danger" },
-  { id: "timeline",   label: "Timeline Pressure", tone: "warning" },
-  { id: "escalation", label: "Escalation Signal", tone: "neutral" },
-  { id: "positive",   label: "Positive Signal",   tone: "success" },
-];
-
-const ELEMENTS_BY_MODE = { L2: L2_ELEMENTS, L3: L3_ELEMENTS };
+const STAGES = L2_STAGES;
 
 /* ── Prompt block generator ────────────────────────────── */
 function lineText(line) {
@@ -681,15 +573,7 @@ But still we are seeing logs of container name \`istio-proxy\` in Datadog UI.
 
 Please help us with correct configuration to exclude logs of container \`istio-proxy\` which is under namespace.`;
 
-const L3_DEFAULT_TEXT = `I am extremely disappointed with the level of support we have received. It has been over 2 weeks since we reported that our Datadog dashboards are showing incorrect host counts, and we believe we are being overbilled as a result.
-
-Despite multiple follow-ups, we have not received a concrete resolution or even an acknowledgment of the root cause. Our team has provided all requested flares, logs, and configuration details on day one.
-
-The responses we receive are generic and do not reflect that anyone has actually reviewed our data. We asked for a timeline last week and received no answer.
-
-We are a P1 enterprise customer and this level of service is not acceptable. We are now considering escalating this to our account executive.`;
-
-const DEFAULT_TEXTS = { L2: L2_DEFAULT_TEXT, L3: L3_DEFAULT_TEXT };
+const DEFAULT_TEXT = L2_DEFAULT_TEXT;
 
 const PILLARS = ["CONTEXT", "INSTRUCTIONS", "REASONING", "EXAMPLES", "OUTPUT FORMAT"];
 
@@ -709,8 +593,7 @@ function renderPrompt(text) {
 function getInitialStage() {
   try {
     const p = new URLSearchParams(window.location.search).get("stage");
-    const allStages = [...L2_STAGES, ...L3_STAGES];
-    if (p && allStages.find(s => s.id === p)) return p;
+    if (p && STAGES.find(s => s.id === p)) return p;
   } catch (_) {}
   return null;
 }
@@ -759,13 +642,8 @@ HTML hard rules:
 
 /* ── App ───────────────────────────────────────────────── */
 function App() {
-  const urlMode = new URLSearchParams(window.location.search).get("mode");
-  const lockedMode = (urlMode === "L2" || urlMode === "L3") ? urlMode : null;
-  const initialMode = lockedMode ?? "L2";
-
-  const [mode, setMode]               = useState(initialMode);
-  const [raw, setRaw]                 = useState(DEFAULT_TEXTS[initialMode]);
-  const [lines, setLines]             = useState(() => parseText(DEFAULT_TEXTS[initialMode]));
+  const [raw, setRaw]                 = useState(DEFAULT_TEXT);
+  const [lines, setLines]             = useState(() => parseText(DEFAULT_TEXT));
   const [editing, setEditing]         = useState(false);
   const [tags, setTags]               = useState({});
   const [dragging, setDragging]       = useState(null);
@@ -773,19 +651,9 @@ function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [promptBlock, setPromptBlock] = useState(null);
   const [copied, setCopied]           = useState(false);
-  const [activeStage, setActiveStage]   = useState(getInitialStage);
-  const [copiedStage, setCopiedStage]   = useState(null);
-  const [tool, setTool]                 = useState("cursor"); // "cursor" | "claude"
-
-  const ELEMENTS = ELEMENTS_BY_MODE[mode];
-  const STAGES   = STAGES_BY_MODE[mode];
-
-  function switchMode(m) {
-    if (m === mode) return;
-    const text = DEFAULT_TEXTS[m];
-    setMode(m); setRaw(text); setLines(parseText(text));
-    setTags({}); setPromptBlock(null); setEditing(false);
-  }
+  const [activeStage, setActiveStage] = useState(getInitialStage);
+  const [copiedStage, setCopiedStage] = useState(null);
+  const [tool, setTool]               = useState("cursor"); // "cursor" | "claude"
 
   function toggleStage(id) {
     setActiveStage(prev => prev === id ? null : id);
@@ -793,13 +661,10 @@ function App() {
 
   function copyPrompt(stage) {
     const stageIndex = STAGES.indexOf(stage);
-    let text = stage.prompt;
-    if (mode === "L2" && stage.canvasVisual) {
-      const routing = tool === "cursor"
-        ? canvasRoutingBlock(stageIndex + 1, stage.canvasVisual)
-        : htmlRoutingBlock(stageIndex + 1, stage.htmlVisual);
-      text = routing + text;
-    }
+    const routing = tool === "cursor"
+      ? canvasRoutingBlock(stageIndex + 1, stage.canvasVisual)
+      : htmlRoutingBlock(stageIndex + 1, stage.htmlVisual);
+    const text = routing + stage.prompt;
     navigator.clipboard.writeText(text).then(() => {
       setCopiedStage(stage.id);
       setTimeout(() => setCopiedStage(null), 2000);
@@ -807,7 +672,7 @@ function App() {
   }
 
   function handleGenerate() {
-    setPromptBlock(generatePromptBlock(lines, tags, ELEMENTS));
+    setPromptBlock(generatePromptBlock(lines, tags, ELEMENTS));  // eslint-disable-line
     setCopied(false);
   }
 
@@ -843,15 +708,9 @@ function App() {
   return (
     <div className="app">
 
-      {/* ── Mode switcher (hidden when ?mode= param locks the mode) ── */}
+      {/* ── Header ── */}
       <div className="row" style={{ gap: 10 }}>
-        {!lockedMode && (
-          <div className="mode-bar">
-            <button className={`mode-btn${mode === "L2" ? " active" : ""}`} onClick={() => switchMode("L2")}>L2</button>
-            <button className={`mode-btn${mode === "L3" ? " active" : ""}`} onClick={() => switchMode("L3")}>L3</button>
-          </div>
-        )}
-        <span className="mode-label">{mode === "L2" ? "Technical Ticket Annotation" : "Customer-Facing Response"}</span>
+        <span className="mode-label">L2 — Technical Ticket Annotation</span>
       </div>
 
       {/* ── Editing panel ── */}
@@ -952,15 +811,13 @@ function App() {
 
           {/* ── Stage buttons + panels ── */}
           <hr className="divider" />
-          {mode === "L2" && (
-            <div className="row" style={{ gap: 10, marginBottom: 6 }}>
-              <div className="tool-bar">
-                <button className={`tool-btn${tool === "cursor" ? " active" : ""}`} onClick={() => setTool("cursor")}>⬡ Cursor Canvas</button>
-                <button className={`tool-btn${tool === "claude" ? " active" : ""}`} onClick={() => setTool("claude")}>◈ Claude HTML</button>
-              </div>
-              <span className="tool-hint">Complete prompts include {tool === "cursor" ? "Cursor canvas routing" : "Claude HTML routing"}</span>
+          <div className="row" style={{ gap: 10, marginBottom: 6 }}>
+            <div className="tool-bar">
+              <button className={`tool-btn${tool === "cursor" ? " active" : ""}`} onClick={() => setTool("cursor")}>⬡ Cursor Canvas</button>
+              <button className={`tool-btn${tool === "claude" ? " active" : ""}`} onClick={() => setTool("claude")}>◈ Claude HTML</button>
             </div>
-          )}
+            <span className="tool-hint">Complete prompts include {tool === "cursor" ? "Cursor canvas routing" : "Claude HTML routing"}</span>
+          </div>
           <div className="stage-bar">
             {STAGES.map((stage, i) => (
               <button
@@ -996,7 +853,7 @@ function App() {
                   )}
                   {stage.promptLight && (
                     <div className="prompt-version-label">
-                      Complete version{mode === "L2" && stage.canvasVisual ? ` — ${tool === "cursor" ? "Cursor Canvas" : "Claude HTML"}` : ""}
+                      Complete version — {tool === "cursor" ? "Cursor Canvas" : "Claude HTML"}
                     </div>
                   )}
                   <div className="stage-prompt-wrap">
