@@ -1240,7 +1240,9 @@ Use this investigation framework throughout:
 - Assign a trust level to every element: Customer Claim · Unverified · Speculative · Low · Medium · High
 - Never raise confidence above 30% without artefact evidence
 
-Citation rule: when a stage prompt says "quote directly" or "no paraphrase", the precision requirement still applies — cite your source. But the source itself must be named and quoted in metaphor language (e.g. "lighthouse manual, section 3" not "agent.log:42"). Accuracy of reasoning is required. Accuracy of vocabulary is forbidden.`;
+Citation rule: when a stage prompt says "quote directly" or "no paraphrase", the precision requirement still applies — cite your source. But the source itself must be named and quoted in metaphor language (e.g. "lighthouse manual, section 3" not "agent.log:42"). Accuracy of reasoning is required. Accuracy of vocabulary is forbidden.
+
+Stage 5 exception: break the metaphor. The escalation document must use real technical language that engineers can act on. Translate everything back from the metaphor world to concrete product terms. This is the proof that the abstraction was understood — not just performed.`;
 }
 
 const HTML_SESSION_ROUTING = `WORKSHOP MODE — HTML file only, no chat output.
