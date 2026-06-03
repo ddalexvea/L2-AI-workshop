@@ -620,43 +620,52 @@ Updated elements table + evidence table + updated hypothesis confidence % + one 
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    steps: ["Where in the codebase does the Agent decide what to filter?", "Which function or rule takes priority when two filters conflict?", "When did this behavior change — and what commit introduced it?", "Can I now name the exact root cause with a file and line to back it up?"],
+    steps: ["How do timestamps and error patterns line up across all available log sources?", "Where in the product codebase is the component responsible for this behavior?", "Which rule or function wins when two settings conflict — and when did that change?", "Can I now name the exact root cause with a log line or code reference to back it up?"],
     canvasVisual: "diff view — DiffView of buggy vs fixed lines with file path in CardHeader and DiffStats in trailing slot, one card per file.",
     htmlVisual: "two-column diff — left=buggy config (red highlight on changed lines), right=fixed (green highlight). File path as section header.",
     promptLight: `INSTRUCTIONS:
-Stage 3 — correlate Stage 2 findings with the Datadog Agent codebase:
-1. Search the datadog-agent GitHub repository for the relevant filter logic
-2. Find the function or component that defines filter precedence
-3. Use git blame to identify when the behavior changed and which commit introduced it
-4. Update hypothesis with code evidence
+Stage 3 — correlate Stage 2 findings across logs and the product codebase:
+1. Cross-reference timestamps and error patterns across all available log sources to trace the event sequence
+2. Search the product GitHub repository for the component implementing the relevant logic
+3. Find the function or rule that defines precedence when two settings conflict
+4. Use git blame to identify when the behavior changed and which commit introduced it
+5. Update hypothesis with log and code evidence
 
 REASONING:
-Quote exact file path + line number + code for every finding. No paraphrase.
+Quote exact source + timestamp or file path + line number for every finding. No paraphrase.
 
 OUTPUT FORMAT:
-Code evidence table + updated confidence % (expected 70–95%) + one-line root cause statement
+Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line root cause statement
 
 [PASTE STAGE 2 FINDINGS HERE]`,
     prompt: `CONTEXT:
-Stage 3 — Log/Configuration Codebase Correlation. Stage 2 confirmed the configuration. Now correlate findings with the Datadog Agent codebase.
+Stage 3 — Artefact Correlation. Stage 2 confirmed the configuration gap. Now cross-correlate all available artifacts (logs, metrics, code) to identify the precise root cause.
 
 INSTRUCTIONS:
 Complete in order:
-1. Search the datadog-agent GitHub repository for files that implement the relevant filter logic
-2. Find the function or component that defines filter group precedence
-3. Use git blame to identify when the behavior changed and which commit introduced it
-4. Update hypothesis with code evidence
+1. Log correlation — cross-reference timestamps and error patterns across all available log sources. Trace the exact sequence of events that leads to the observed symptom.
+2. Codebase search — search the product GitHub repository for files implementing the relevant logic. Identify the component responsible for the behavior.
+3. Precedence analysis — find the function or rule that defines what happens when two settings conflict.
+4. Git blame — identify when the behavior changed and which commit introduced it.
+5. Update hypothesis with log and code evidence.
 
 REASONING:
-For each finding, quote the exact file path + line number + code or comment. Do not paraphrase — direct quote only.
+For each finding, quote the exact source + timestamp or file path + line number + exact text. Do not paraphrase — direct quote only.
 
 EXAMPLES:
+Log correlation:
+| Timestamp | Source | Event | Links to |
+|-----------|--------|-------|----------|
+| 10:42:01 | component-A.log | "starting filter evaluation" | context |
+| 10:42:01 | component-B.log | "rule applied: exclude X" | H1 |
+
+Code evidence:
 | File | Line | Quote | Verdict |
 |------|------|-------|---------|
 | [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
 
 OUTPUT FORMAT:
-Code evidence table + updated hypothesis confidence % (expected 70-95%) + one-line root cause statement.
+Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line root cause statement.
 
 [PASTE STAGE 2 FINDINGS HERE]`,
   },
