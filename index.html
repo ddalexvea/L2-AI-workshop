@@ -773,10 +773,10 @@ const STAGE_VISUALS = {
       return (
         <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
           {/* Zone 1 — input */}
-          <div style={{width:56,display:'flex',flexDirection:'column',alignItems:'center',gap:4,paddingTop:6}}>
-            <div style={{flex:1,width:44,background:'#f1f5f9',borderRadius:6,border:'1px solid #e2e8f0',position:'relative',overflow:'hidden'}}>
-              {[[6,32],[14,18],[22,26],[30,12],[38,28],[46,14],[54,22],[62,30],[70,16],[78,24]].map(([t,w],i)=>(
-                <div key={i} style={{position:'absolute',left:4,top:t,height:4,width:w,borderRadius:2,background:'#cbd5e1'}}/>
+          <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4,paddingTop:6}}>
+            <div style={{flex:1,width:'100%',background:'#f1f5f9',borderRadius:6,border:'1px solid #e2e8f0',position:'relative',overflow:'hidden'}}>
+              {[[6,78],[14,48],[22,65],[30,30],[38,72],[46,38],[54,58],[62,82],[70,42],[78,62]].map(([t,wpct],i)=>(
+                <div key={i} style={{position:'absolute',left:6,top:t,height:4,width:`${wpct}%`,borderRadius:2,background:'#cbd5e1'}}/>
               ))}
             </div>
             <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em'}}>MESSAGE</span>
@@ -791,7 +791,7 @@ const STAGE_VISUALS = {
             </div>
           </div>
           {/* Zone 3 — output: Investigation Board */}
-          <div style={{flex:1,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
+          <div style={{flex:1.3,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
             <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:5}}>INVESTIGATION BOARD</span>
             {[['#22c55e','S','Statement','high-trust claim'],['#f59e0b','E','Evidence','artifact quote'],['#ef4444','H','Hypothesis','speculative cause']].map(([c,b,l,sub],i)=>(
               <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderLeft:`3px solid ${c}`,background:'#fff',borderRadius:4,padding:'5px 7px',marginBottom:4,boxShadow:'0 1px 2px #0001'}}>
@@ -825,7 +825,7 @@ const STAGE_VISUALS = {
       return (
         <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
           {/* Zone 1 — inputs */}
-          <div style={{width:72,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
             <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:4}}>ARTIFACTS</span>
             {rows.map((r,i)=>(
               <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:5,padding:'0 7px',margin:'2px 0'}}>
@@ -845,8 +845,8 @@ const STAGE_VISUALS = {
               <Ic n="BrainCircuit" size={14} color={C}/>
             </div>
           </div>
-          {/* Zone 3 — evidence table — same row height as left chips */}
-          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+          {/* Zone 3 — evidence table */}
+          <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
             <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>EVIDENCE TABLE</span>
             {rows.map((r,i)=>(
               <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 7px',margin:'2px 0',background:r.gap?'#fef9c3':'#f8fafc',border:`1px solid ${r.gap?'#fde047':'#e2e8f0'}`}}>
@@ -878,7 +878,7 @@ const STAGE_VISUALS = {
       return (
         <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
           {/* Zone 1 — inputs */}
-          <div style={{width:72,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
             <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:4}}>SOURCES</span>
             {[['ScrollText','Log A'],['ScrollText','Log B'],['Github','Codebase']].map(([ic,lbl],i)=>(
               <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,background:'#faf5ff',border:'1px solid #ddd6fe',borderRadius:5,padding:'0 7px',margin:'2px 0'}}>
@@ -899,7 +899,7 @@ const STAGE_VISUALS = {
             </div>
           </div>
           {/* Zone 3 — right rows matching left height */}
-          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+          <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
             <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>ROOT CAUSE</span>
             {rightRows.map((r,i)=>(
               <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:6,borderRadius:5,padding:'0 8px',margin:'2px 0',background:r.bg,border:`1px solid ${r.bc}`}}>
@@ -988,12 +988,12 @@ const STAGE_VISUALS = {
       return (
         <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
           {/* Zone 1 — 4 stage inputs */}
-          <div style={{width:56,display:'flex',flexDirection:'column',gap:4,paddingTop:6}}>
-            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:1}}>STAGES</span>
+          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:4}}>STAGES</span>
             {[['#2563eb','Kickoff'],['#15803d','Investig.'],['#6d28d9','Artefact'],['#c2410c','Repro']].map(([c,lbl],i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:4,borderRadius:4,padding:'3px 6px',background:`${c}10`,border:`1px solid ${c}40`}}>
-                <div style={{width:6,height:6,borderRadius:'50%',background:c,flexShrink:0}}/>
-                <span style={{fontSize:8,color:c,fontWeight:600}}>{lbl}</span>
+              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 7px',margin:'2px 0',background:`${c}10`,border:`1px solid ${c}40`}}>
+                <div style={{width:7,height:7,borderRadius:'50%',background:c,flexShrink:0}}/>
+                <span style={{fontSize:9,color:c,fontWeight:600}}>{lbl}</span>
               </div>
             ))}
           </div>
@@ -1010,7 +1010,7 @@ const STAGE_VISUALS = {
             </div>
           </div>
           {/* Zone 3 — escalation ticket fields */}
-          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+          <div style={{flex:1.3,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
             <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>ESCALATION TICKET</span>
             {[
               {ic:'AlertCircle', label:'Unexpected behavior', bg:'#fef2f2', bc:'#fca5a5', ic_c:'#dc2626'},
@@ -1843,7 +1843,6 @@ function App() {
                   {lines.length > 0 ? lines.map(l=>l.text||l.intro||'').join(' ').slice(0,80)+'…' : 'No message loaded'}
                 </span>
                 {totalTags > 0 && <span className="count-badge" style={{flexShrink:0}}>{totalTags} tag{totalTags!==1?'s':''}</span>}
-                <button className="toggle-btn" style={{flexShrink:0,fontSize:10}} onClick={() => setEditing(true)}>Change</button>
                 <button className="toggle-btn" style={{flexShrink:0,fontSize:10}} onClick={() => setActiveStage('triage')}>View →</button>
               </div>
             )}
