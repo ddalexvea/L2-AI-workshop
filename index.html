@@ -1010,29 +1010,23 @@ const STAGE_VISUALS = {
             </div>
           </div>
           {/* Zone 3 — escalation ticket fields */}
-          <div style={{flex:1,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
-            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:5}}>ESCALATION TICKET</span>
+          <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingTop:6,paddingBottom:4}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:4}}>ESCALATION TICKET</span>
             {[
-              {ic:'Target',    label:'Root cause', bg:'#fef2f2', bc:'#fca5a5', bar:'#fee2e2'},
-              {ic:'FileCode',  label:'Evidence',   bg:'#f8fafc', bc:'#e2e8f0', bar:'#e2e8f0'},
-              {ic:'Wrench',    label:'Workaround', bg:'#f0fdfa', bc:'#99f6e4', bar:'#ccfbf1'},
+              {ic:'AlertCircle', label:'Unexpected behavior', bg:'#fef2f2', bc:'#fca5a5', ic_c:'#dc2626'},
+              {ic:'FileCode',    label:'Evidence + artifacts', bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
+              {ic:'ClipboardList', label:'Investigation scope', bg:'#f8fafc', bc:'#e2e8f0', ic_c:'#64748b'},
+              {ic:'Wrench',      label:'Workaround',           bg:'#f0fdfa', bc:'#99f6e4', ic_c:C},
             ].map((f,i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderRadius:4,padding:'5px 7px',marginBottom:4,background:f.bg,border:`1px solid ${f.bc}`}}>
-                <Ic n={f.ic} size={10} color={i===0?'#dc2626':i===2?C:'#64748b'}/>
-                <span style={{fontSize:8,color:'#334155',width:56,flexShrink:0}}>{f.label}</span>
-                <div style={{flex:1,height:4,borderRadius:2,background:f.bar}}/>
+              <div key={i} style={{flex:1,display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'0 7px',margin:'2px 0',background:f.bg,border:`1px solid ${f.bc}`}}>
+                <Ic n={f.ic} size={10} color={f.ic_c}/>
+                <span style={{fontSize:8,color:'#334155',flex:1,fontWeight:i===0?600:400}}>{f.label}</span>
+                {i===3 && <div style={{display:'flex',gap:3}}>
+                  <div style={{width:5,height:5,borderRadius:'50%',background:'#f87171'}}/>
+                  <div style={{width:5,height:5,borderRadius:'50%',background:'#4ade80'}}/>
+                </div>}
               </div>
             ))}
-            <div style={{display:'flex',gap:4,paddingLeft:2}}>
-              <div style={{background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:4,padding:'3px 8px',display:'flex',alignItems:'center',gap:3}}>
-                <div style={{width:5,height:5,borderRadius:'50%',background:'#ef4444'}}/>
-                <span style={{fontSize:7,color:'#dc2626',fontWeight:600}}>broken</span>
-              </div>
-              <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:4,padding:'3px 8px',display:'flex',alignItems:'center',gap:3}}>
-                <div style={{width:5,height:5,borderRadius:'50%',background:'#22c55e'}}/>
-                <span style={{fontSize:7,color:'#15803d',fontWeight:600}}>fixed</span>
-              </div>
-            </div>
           </div>
         </div>
       );
@@ -1066,10 +1060,10 @@ const STAGE_VISUAL_HINTS = {
     () => <HV.Diff lines={[['+',' rule_B: ["X"]  ← from customer'],['+',' rule_A: ["X"]  ← from customer'],['−',' (do not change either value)']]} />,
   ],
   escalation: [
-    () => <HV.Contrast bad='"The feature is broken"' good='"filter.go:87 — rule B overrides rule A, silently dropping item X"' />,
-    () => <HV.Table cols={['#','Source','Links']} rows={[['1','app.log:42','H1 ✓'],['2','filter.go:87','H1 ✓'],['3','repro','confirmed']]} />,
-    () => <HV.Contrast bad='Unknown' good='Broken: v1.2–v1.4 · Fixed: v1.5 (PR #1234)' />,
-    () => <HV.Table cols={['Option','Action']} rows={[['A','Remove X from rule_B config'],['B','Pin to ≤ v1.1 until fix ships']]} />,
+    () => <HV.Contrast bad='"The feature is not working"' good='"Expected: item X processed. Actual: item X silently skipped (artifact:line)" — no root cause claim' />,
+    () => <HV.Table cols={['#','Artifact','What it shows']} rows={[['1','component.log:42','symptom present'],['2','config diff','mismatch found'],['3','repro run','confirmed affected']]} />,
+    () => <HV.Contrast bad='Unknown / not investigated' good='Affected: vX.Y confirmed · Working: vA.B confirmed (or "not yet determined")' />,
+    () => <HV.Table cols={['Area','Investigated','Outcome']} rows={[['Config','✓','mismatch found'],['Runtime','✓','discrepancy confirmed'],['Other hypothesis','✓','ruled out']]} />,
   ],
 };
 
@@ -1277,52 +1271,56 @@ Environment plan (presented first, before execution) + step-by-step reproduction
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5",
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    steps: ["Can I state the root cause in one sentence an engineer could act on?", "Does every claim I'm making have an artifact to back it up?", "What versions are confirmed broken — and is there a known fixed version?", "What can the customer do today while waiting for a fix?"],
-    canvasVisual: "summary — Root Cause (danger Callout) + Affected versions (Stat cards) + Workaround (success Callout) side by side, evidence table with file:line citations below.",
-    htmlVisual: "three side-by-side boxes: Root Cause (red border), Versions (gray border), Workaround (green border). Evidence table with file:line citations below.",
+    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual, with evidence?", "Is every claim backed by a specific artifact reference — no unsupported assertions?", "What versions are confirmed affected, and is there a known fixed version or workaround?", "Have I summarized what was investigated and ruled out, so the engineering team doesn't duplicate work?"],
+    canvasVisual: "summary — Unexpected Behavior (danger Callout) + Affected versions (Stat cards) + Workaround (success Callout) side by side, evidence table with artifact citations below.",
+    htmlVisual: "three side-by-side boxes: Unexpected Behavior (red border), Versions (gray border), Workaround (green border). Evidence table with artifact citations below.",
     promptLight: `INSTRUCTIONS:
 Stage 5 — prepare the escalation package:
-1. State the root cause in one technical sentence
+1. Describe the unexpected behavior in one sentence: what was expected vs. what actually happens
 2. List all evidence with artifact references (file + line, diagnostic artifact, or screenshot)
-3. State affected versions — confirmed broken and confirmed fixed
-4. Propose a workaround the customer can apply today
-5. Draft the escalation ticket — summary, reproduction steps, expected vs actual, evidence, versions, workaround
+3. State affected versions — confirmed affected and confirmed working (if known)
+4. Propose a workaround the customer can apply today, if any
+5. Draft the escalation ticket — summary, reproduction steps, expected vs actual behavior, evidence, affected versions, workaround, investigation summary
 
 REASONING:
-Every claim must cite a specific artifact. No claim without direct evidence.
+Every claim must cite a specific artifact. No unsupported assertions.
+Do not claim a root cause — describe the observed behavior and leave root cause analysis to the engineering team.
 
 OUTPUT FORMAT:
-Root cause / evidence table / affected versions / workaround / escalation draft
+Unexpected behavior / evidence table / affected versions / workaround / escalation draft
 
 [CUSTOMER ISSUE — paste original customer message]
 [INVESTIGATION — paste Stage 1–4 findings]`,
     prompt: `CONTEXT:
-Stage 5 — Escalation. Reproduction confirmed the bug. Prepare the escalation package.
+Stage 5 — Escalation. Reproduction confirmed. Prepare the escalation package for the engineering team.
 
 INSTRUCTIONS:
 Complete in order:
-1. State the root cause in one technical sentence
-2. List all evidence with artifact references (file + line, diagnostic artifact, or screenshot)
-3. State affected versions (confirmed broken + confirmed fixed)
-4. Propose a workaround the customer can apply today
-5. Draft an escalation ticket with: summary, reproduction steps, expected vs actual behavior, evidence references, affected versions, workaround
+1. Describe the unexpected behavior in one sentence: expected outcome vs. actual outcome
+2. List all evidence with artifact references (file + line, diagnostic artifact, config, or screenshot)
+3. State affected versions (confirmed affected + confirmed working if known)
+4. Propose a workaround the customer can use today, if any exists
+5. Summarize what was investigated and ruled out during Stages 1–4
+6. Draft an escalation ticket with: summary, reproduction steps, expected vs actual behavior, evidence table, affected versions, workaround, investigation scope
 
 REASONING:
-For each claim in the escalation, cite a specific artifact. No claim without direct evidence.
+For each claim, cite a specific artifact. No assertion without direct evidence.
+The escalation describes the behavior — root cause determination is the engineering team's responsibility.
 
 EXAMPLES:
-- Root cause: [technical one-sentence description]
-- Evidence: [file:line or artifact reference]
-- Affected: [version X confirmed broken · version Y confirmed fixed]
-- Workaround: [actionable step the customer can take today]
+- Unexpected behavior: [expected X, observed Y — cite artifact]
+- Evidence: [artifact reference + what it shows]
+- Affected: [version X confirmed affected · version Y confirmed working]
+- Workaround: [actionable step the customer can take today, or "none identified"]
+- Investigated and ruled out: [list of hypotheses eliminated with evidence]
 
 OUTPUT FORMAT:
-Root cause / evidence table / affected versions / workaround / escalation draft.
+Unexpected behavior / evidence table / affected versions / workaround / investigation scope / escalation draft.
 
 [CUSTOMER ISSUE DESCRIPTION — paste original customer message]
 [CONCERN / ISSUE — paste Stage 1 elements table and hypotheses]
 [INVESTIGATION — paste Stage 2 artifact findings and trust level updates]
-[CODEBASE CORRELATION — paste Stage 3 code evidence and root cause statement]
+[CODEBASE CORRELATION — paste Stage 3 code evidence]
 [REPRODUCTION — paste Stage 4 reproduction log and debug output]`,
   },
 ];
