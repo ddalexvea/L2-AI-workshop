@@ -666,17 +666,21 @@ function App() {
     setActiveStage(prev => prev === id ? null : id);
   }
 
-  function copyPrompt(stage) {
+  function buildPrompt(stage) {
     const stageIndex = STAGES.indexOf(stage);
     const routing = tool === "cursor"
       ? canvasRoutingBlock(stageIndex + 1)
       : htmlRoutingBlock(stageIndex + 1, stage.htmlVisual);
-    const text = routing + stage.prompt;
-    navigator.clipboard.writeText(text).then(() => {
+    return routing + stage.prompt;
+  }
+
+  function copyPrompt(stage) {
+    navigator.clipboard.writeText(buildPrompt(stage)).then(() => {
       setCopiedStage(stage.id);
       setTimeout(() => setCopiedStage(null), 2000);
     });
   }
+
 
   function handleGenerate() {
     setPromptBlock(generatePromptBlock(lines, tags, ELEMENTS));  // eslint-disable-line
@@ -865,10 +869,7 @@ function App() {
                   )}
                   <div className="stage-prompt-wrap">
                     <pre className="stage-prompt">{renderPrompt(stage.prompt)}</pre>
-                    <button
-                      className="stage-copy-btn"
-                      onClick={() => copyPrompt(stage)}
-                    >
+                    <button className="stage-copy-btn" onClick={() => copyPrompt(stage)}>
                       {copiedStage === stage.id ? "Copied!" : "Copy"}
                     </button>
                   </div>
