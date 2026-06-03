@@ -768,214 +768,279 @@ const STAGE_VISUALS = {
   triage: {
     color:'#2563eb', icon:'SearchCheck',
     concept: 'Extract structure from noise — before opening a single artifact.',
-    inputs: [
-      {icon:'FileText', label:'Customer ticket', sub:'raw, unstructured text'},
-    ],
-    graphic: () => (
-      <div style={{display:'flex',alignItems:'center',gap:4}}>
-        {/* Scattered noise blob */}
-        <div style={{width:44,height:88,background:'#f1f5f9',borderRadius:6,border:'1px solid #e2e8f0',flexShrink:0,position:'relative',overflow:'hidden'}}>
-          {[[4,6,32],[4,14,18],[4,22,26],[4,30,12],[4,38,28],[4,46,14],[4,54,22],[4,62,30],[4,70,16],[4,78,24]].map(([h,t,w],i)=>(
-            <div key={i} style={{position:'absolute',left:4,top:t,height:h,width:w,borderRadius:2,background:'#cbd5e1'}}/>
-          ))}
-        </div>
-        {/* SVG line through brain */}
-        <div style={{flex:1,position:'relative',height:88,display:'flex',alignItems:'center',justifyContent:'center'}}>
-          <svg width="100%" height="88" viewBox="0 0 50 88" preserveAspectRatio="none" style={{position:'absolute',inset:0}}>
-            <line x1="0" y1="44" x2="50" y2="44" stroke="#2563eb" strokeWidth="1.5" strokeOpacity="0.35"/>
-          </svg>
-          <div style={{position:'relative',zIndex:1,background:'#eff6ff',border:'2px solid #93c5fd',borderRadius:'50%',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Ic n="BrainCircuit" size={14} color="#2563eb"/>
-          </div>
-        </div>
-        {/* Structured S/E/H board */}
-        <div style={{flex:1.2,display:'flex',flexDirection:'column',gap:4}}>
-          {[['#22c55e','S','Statement'],['#f59e0b','E','Evidence'],['#ef4444','H','Hypothesis']].map(([c,b,l],i)=>(
-            <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderLeft:`3px solid ${c}`,background:'#fff',borderRadius:4,padding:'5px 7px',boxShadow:'0 1px 3px #0001'}}>
-              <span style={{fontSize:8,fontWeight:800,color:c,width:10,flexShrink:0}}>{b}</span>
-              <span style={{fontSize:9,color:'#475569'}}>{l}</span>
+    graphic: () => {
+      const C = '#2563eb';
+      return (
+        <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
+          {/* Zone 1 — input */}
+          <div style={{width:56,display:'flex',flexDirection:'column',alignItems:'center',gap:4,paddingTop:6}}>
+            <div style={{flex:1,width:44,background:'#f1f5f9',borderRadius:6,border:'1px solid #e2e8f0',position:'relative',overflow:'hidden'}}>
+              {[[6,32],[14,18],[22,26],[30,12],[38,28],[46,14],[54,22],[62,30],[70,16],[78,24]].map(([t,w],i)=>(
+                <div key={i} style={{position:'absolute',left:4,top:t,height:4,width:w,borderRadius:2,background:'#cbd5e1'}}/>
+              ))}
             </div>
-          ))}
-          <div style={{display:'flex',alignItems:'center',gap:4,background:'#eff6ff',borderRadius:4,padding:'4px 6px',marginTop:1}}>
-            <Ic n="TrendingDown" size={9} color="#2563eb"/>
-            <div style={{flex:1,background:'#bfdbfe',borderRadius:2,height:4,overflow:'hidden'}}><div style={{width:'20%',background:'#2563eb',height:'100%'}}/></div>
-            <span style={{fontSize:8,fontWeight:700,color:'#2563eb'}}>≤30%</span>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em'}}>MESSAGE</span>
+          </div>
+          {/* Zone 2 — brain */}
+          <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="48" height="120" viewBox="0 0 48 120" style={{position:'absolute',inset:0}}>
+              <line x1="0" y1="60" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.3"/>
+            </svg>
+            <div style={{position:'relative',zIndex:1,background:'#eff6ff',border:`2px solid ${C}60`,borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Ic n="BrainCircuit" size={14} color={C}/>
+            </div>
+          </div>
+          {/* Zone 3 — output: Investigation Board */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:5}}>INVESTIGATION BOARD</span>
+            {[['#22c55e','S','Statement','high-trust claim'],['#f59e0b','E','Evidence','artifact quote'],['#ef4444','H','Hypothesis','speculative cause']].map(([c,b,l,sub],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderLeft:`3px solid ${c}`,background:'#fff',borderRadius:4,padding:'5px 7px',marginBottom:4,boxShadow:'0 1px 2px #0001'}}>
+                <span style={{fontSize:8,fontWeight:800,color:c,width:10,flexShrink:0}}>{b}</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:9,fontWeight:600,color:'#334155'}}>{l}</div>
+                  <div style={{fontSize:7,color:'#94a3b8'}}>{sub}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{display:'flex',alignItems:'center',gap:4,background:'#eff6ff',borderRadius:4,padding:'3px 6px'}}>
+              <Ic n="TrendingDown" size={9} color={C}/>
+              <div style={{flex:1,background:'#bfdbfe',borderRadius:2,height:4,overflow:'hidden'}}><div style={{width:'20%',background:C,height:'100%'}}/></div>
+              <span style={{fontSize:8,fontWeight:700,color:C}}>≤30%</span>
+            </div>
           </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   investigation: {
     color:'#15803d', icon:'Microscope',
     concept: 'Compare what was configured vs. what actually ran — find the gap.',
-    graphic: () => (
-      <div style={{display:'flex',alignItems:'center',gap:6}}>
-        {/* 3 anonymous artifact icons */}
-        <div style={{display:'flex',flexDirection:'column',gap:5,flexShrink:0}}>
-          {[['FileCode','#0891b2'],['FileCode','#7c3aed'],['BookOpen','#64748b']].map(([ic,c],i)=>(
-            <div key={i} style={{width:30,height:22,borderRadius:5,background:`${c}12`,border:`1px solid ${c}40`,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <Ic n={ic} size={12} color={c}/>
+    graphic: () => {
+      const C = '#15803d';
+      const rows = [
+        {ic:'FileCode', label:'Config',    trust:'HIGH', gap:false, tc:'#22c55e'},
+        {ic:'FileCode', label:'Runtime',   trust:'GAP',  gap:true,  tc:'#f59e0b'},
+        {ic:'BookOpen', label:'Reference', trust:'HIGH', gap:false, tc:'#22c55e'},
+      ];
+      return (
+        <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
+          {/* Zone 1 — inputs */}
+          <div style={{width:62,display:'flex',flexDirection:'column',gap:4,paddingTop:6}}>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:1}}>ARTIFACTS</span>
+            {rows.map((r,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:5,padding:'5px 7px'}}>
+                <Ic n={r.ic} size={10} color="#64748b"/>
+                <span style={{fontSize:9,color:'#334155',fontWeight:500}}>{r.label}</span>
+              </div>
+            ))}
+          </div>
+          {/* Zone 2 — brain */}
+          <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="48" height="120" viewBox="0 0 48 120" style={{position:'absolute',inset:0}}>
+              <line x1="0" y1="36" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="60" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="84" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+            </svg>
+            <div style={{position:'relative',zIndex:1,background:'#f0fdf4',border:`2px solid ${C}60`,borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Ic n="BrainCircuit" size={14} color={C}/>
             </div>
-          ))}
-        </div>
-        {/* SVG converging lines + brain */}
-        <div style={{width:44,position:'relative',height:82,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-          <svg width="44" height="82" viewBox="0 0 44 82" style={{position:'absolute',inset:0}}>
-            <line x1="0" y1="11" x2="44" y2="41" stroke="#15803d" strokeWidth="1.5" strokeOpacity="0.5"/>
-            <line x1="0" y1="41" x2="44" y2="41" stroke="#15803d" strokeWidth="1.5" strokeOpacity="0.5"/>
-            <line x1="0" y1="71" x2="44" y2="41" stroke="#15803d" strokeWidth="1.5" strokeOpacity="0.5"/>
-          </svg>
-          <div style={{position:'relative',zIndex:1,background:'#f0fdf4',border:'2px solid #86efac',borderRadius:'50%',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Ic n="BrainCircuit" size={13} color="#15803d"/>
+          </div>
+          {/* Zone 3 — evidence table */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:5}}>EVIDENCE TABLE</span>
+            {rows.map((r,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderRadius:4,padding:'5px 7px',marginBottom:4,background:r.gap?'#fef3c7':'#f8fafc',border:`1px solid ${r.gap?'#f59e0b':'#e2e8f0'}`}}>
+                <span style={{fontSize:8,color:'#64748b',width:38,flexShrink:0}}>{r.label}</span>
+                <div style={{flex:1,height:4,borderRadius:2,background:r.gap?'#fde68a':'#e2e8f0'}}/>
+                <span style={{fontSize:7,fontWeight:700,color:r.tc,flexShrink:0}}>{r.trust}</span>
+              </div>
+            ))}
+            <div style={{display:'flex',alignItems:'center',gap:4,background:'#f0fdf4',borderRadius:4,padding:'3px 6px',marginTop:2}}>
+              <Ic n="TrendingUp" size={9} color={C}/>
+              <div style={{flex:1,background:'#bbf7d0',borderRadius:2,height:4,overflow:'hidden'}}><div style={{width:'60%',background:C,height:'100%'}}/></div>
+              <span style={{fontSize:8,fontWeight:700,color:C}}>~60%</span>
+            </div>
           </div>
         </div>
-        {/* Abstract comparison rows — one gap highlighted */}
-        <div style={{flex:1,display:'flex',flexDirection:'column',gap:4}}>
-          {[false,true,false].map((gap,i)=>(
-            <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderRadius:5,padding:'5px 7px',background:gap?'#fef3c7':'#f8fafc',border:`1px solid ${gap?'#f59e0b':'#e2e8f0'}`}}>
-              <Ic n="FileCode" size={10} color={gap?'#f59e0b':'#94a3b8'}/>
-              <div style={{flex:1,height:4,borderRadius:2,background:gap?'#fde68a':'#e2e8f0'}}/>
-              {gap && <span style={{fontSize:8,fontWeight:700,color:'#b45309',flexShrink:0}}>GAP</span>}
-            </div>
-          ))}
-          <div style={{display:'flex',alignItems:'center',gap:4,background:'#f0fdf4',borderRadius:4,padding:'4px 7px',marginTop:2}}>
-            <Ic n="TrendingUp" size={9} color="#15803d"/>
-            <div style={{flex:1,background:'#bbf7d0',borderRadius:2,height:4,overflow:'hidden'}}><div style={{width:'60%',background:'#15803d',height:'100%'}}/></div>
-            <span style={{fontSize:8,fontWeight:700,color:'#15803d'}}>~60%</span>
-          </div>
-        </div>
-      </div>
-    ),
+      );
+    },
   },
   artefact: {
     color:'#6d28d9', icon:'GitMerge',
     concept: 'Pinpoint the exact code location and commit where the behavior lives.',
-    graphic: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:6}}>
-        {/* Two streams converging (SVG) */}
-        <div style={{position:'relative',height:64,background:'#faf5ff',borderRadius:7,overflow:'hidden'}}>
-          <svg width="100%" height="64" style={{position:'absolute',inset:0}}>
-            <line x1="5%" y1="20" x2="64%" y2="32" stroke="#6d28d9" strokeWidth="2" strokeOpacity="0.45"/>
-            <line x1="5%" y1="44" x2="64%" y2="32" stroke="#6d28d9" strokeWidth="2" strokeOpacity="0.45"/>
-            <line x1="64%" y1="32" x2="94%" y2="32" stroke="#6d28d9" strokeWidth="3" strokeOpacity="0.7"/>
-            <circle cx="64%" cy="32" r="5" fill="#6d28d9"/>
-          </svg>
-          <div style={{position:'absolute',left:10,top:10,display:'flex',alignItems:'center',gap:3}}>
-            <Ic n="ScrollText" size={9} color="#7c3aed"/><span style={{fontSize:7,fontWeight:600,color:'#7c3aed'}}>log A</span>
+    graphic: () => {
+      const C = '#6d28d9';
+      return (
+        <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
+          {/* Zone 1 — inputs */}
+          <div style={{width:62,display:'flex',flexDirection:'column',gap:4,paddingTop:6}}>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:1}}>SOURCES</span>
+            {[['ScrollText','Log A'],['ScrollText','Log B'],['Github','Codebase']].map(([ic,lbl],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5,background:'#faf5ff',border:'1px solid #ddd6fe',borderRadius:5,padding:'5px 7px'}}>
+                <Ic n={ic} size={10} color={C}/>
+                <span style={{fontSize:9,color:'#4c1d95',fontWeight:500}}>{lbl}</span>
+              </div>
+            ))}
           </div>
-          <div style={{position:'absolute',left:10,top:36,display:'flex',alignItems:'center',gap:3}}>
-            <Ic n="ScrollText" size={9} color="#7c3aed"/><span style={{fontSize:7,fontWeight:600,color:'#7c3aed'}}>log B</span>
+          {/* Zone 2 — brain with merge lines */}
+          <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="48" height="120" viewBox="0 0 48 120" style={{position:'absolute',inset:0}}>
+              <line x1="0" y1="29" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="52" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+              <line x1="0" y1="75" x2="48" y2="60" stroke={C} strokeWidth="1.5" strokeOpacity="0.4"/>
+            </svg>
+            <div style={{position:'relative',zIndex:1,background:'#faf5ff',border:`2px solid ${C}60`,borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Ic n="BrainCircuit" size={14} color={C}/>
+            </div>
           </div>
-          <div style={{position:'absolute',right:8,top:22,display:'flex',alignItems:'center',gap:3}}>
-            <Ic n="MapPin" size={10} color="#6d28d9"/>
-            <span style={{fontSize:7,fontWeight:700,color:'#6d28d9'}}>match</span>
+          {/* Zone 3 — code location + diff */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:5,paddingTop:6}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em'}}>ROOT CAUSE</span>
+            {/* Timestamp match indicator */}
+            <div style={{display:'flex',alignItems:'center',gap:5,background:'#faf5ff',border:'1px solid #ddd6fe',borderRadius:5,padding:'5px 7px'}}>
+              <Ic n="Timer" size={10} color={C}/>
+              <span style={{fontSize:8,color:'#4c1d95'}}>Timestamp match</span>
+              <div style={{marginLeft:'auto',width:8,height:8,borderRadius:'50%',background:C}}/>
+            </div>
+            {/* Code pin */}
+            <div style={{background:'#1e293b',borderRadius:5,padding:'5px 8px',display:'flex',alignItems:'center',gap:5}}>
+              <Ic n="FileCode" size={10} color="#94a3b8"/>
+              <div style={{flex:1,height:4,borderRadius:2,background:'#334155'}}/>
+              <span style={{fontSize:8,fontFamily:'monospace',color:'#86efac',fontWeight:700}}>:N</span>
+              <div style={{background:C,borderRadius:3,padding:'1px 5px',fontSize:7,color:'#fff',fontWeight:700}}>blame</div>
+            </div>
+            {/* Diff */}
+            <div style={{background:'#1e293b',borderRadius:5,padding:'5px 8px',display:'flex',flexDirection:'column',gap:3}}>
+              <div style={{display:'flex',alignItems:'center',gap:4}}>
+                <span style={{fontSize:8,fontFamily:'monospace',color:'#fca5a5',width:8,flexShrink:0}}>-</span>
+                <div style={{flex:1,height:4,borderRadius:2,background:'#fca5a525'}}/>
+                <span style={{fontSize:7,color:'#fca5a5'}}>old</span>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:4}}>
+                <span style={{fontSize:8,fontFamily:'monospace',color:'#86efac',width:8,flexShrink:0}}>+</span>
+                <div style={{flex:1,height:4,borderRadius:2,background:'#86efac25'}}/>
+                <span style={{fontSize:7,color:'#86efac'}}>new</span>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Abstract source location */}
-        <div style={{background:'#1e293b',borderRadius:5,padding:'5px 10px',display:'flex',alignItems:'center',gap:6}}>
-          <Ic n="FileCode" size={10} color="#94a3b8"/>
-          <div style={{flex:1,height:4,borderRadius:2,background:'#334155'}}/>
-          <span style={{fontSize:9,fontFamily:'monospace',color:'#86efac',fontWeight:700}}>:N</span>
-          <div style={{background:'#7c3aed',borderRadius:3,padding:'2px 6px',fontSize:7,color:'#fff',fontWeight:700,flexShrink:0}}>git blame</div>
-        </div>
-        {/* Abstract diff bars */}
-        <div style={{background:'#1e293b',borderRadius:5,padding:'5px 10px',display:'flex',flexDirection:'column',gap:3}}>
-          <div style={{display:'flex',alignItems:'center',gap:4}}><span style={{fontSize:8,fontFamily:'monospace',color:'#fca5a5',width:8}}>-</span><div style={{flex:1,height:4,borderRadius:2,background:'#fca5a530'}}/></div>
-          <div style={{display:'flex',alignItems:'center',gap:4}}><span style={{fontSize:8,fontFamily:'monospace',color:'#86efac',width:8}}>+</span><div style={{flex:1,height:4,borderRadius:2,background:'#86efac40'}}/></div>
-        </div>
-      </div>
-    ),
+      );
+    },
   },
   reproduction: {
     color:'#c2410c', icon:'FlaskConical',
     concept: 'Verify the hypothesis by reproducing the symptom in a controlled sandbox.',
-    graphic: () => (
-      <div style={{display:'flex',flexDirection:'column',gap:6}}>
-        {/* Horizontal pipeline */}
-        <div style={{display:'flex',alignItems:'center',gap:4}}>
-          <div style={{width:34,height:34,borderRadius:7,background:'#fff7ed',border:'1px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <Ic n="Settings" size={16} color="#c2410c"/>
-          </div>
-          <Ic n="ChevronRight" size={11} color="#cbd5e1"/>
-          {[1,2,3].map((n,i)=>(
-            <React.Fragment key={n}>
-              <div style={{width:30,height:30,borderRadius:'50%',background:'#fff7ed',border:'2px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                <span style={{fontSize:12,fontWeight:700,color:'#c2410c'}}>{n}</span>
+    graphic: () => {
+      const C = '#c2410c';
+      const steps = [
+        {n:1, label:'Setup',   icon:'Server'},
+        {n:2, label:'Config',  icon:'SlidersHorizontal'},
+        {n:3, label:'Run',     icon:'Play'},
+      ];
+      return (
+        <div style={{display:'flex',flexDirection:'column',gap:8,height:120,justifyContent:'center'}}>
+          {/* Pipeline row */}
+          <div style={{display:'flex',alignItems:'center',gap:4}}>
+            {/* Input */}
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
+              <div style={{width:34,height:34,borderRadius:7,background:'#fff7ed',border:'1px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <Ic n="Settings" size={15} color={C}/>
               </div>
-              {n<3 && <Ic n="ChevronRight" size={11} color="#cbd5e1"/>}
-            </React.Fragment>
-          ))}
-          <Ic n="ChevronRight" size={11} color="#cbd5e1"/>
-          <div style={{flex:1,background:'#fef2f2',border:'2px solid #fca5a5',borderRadius:7,padding:'6px 8px',display:'flex',alignItems:'center',gap:4}}>
-            <Ic n="CheckCircle2" size={12} color="#ef4444"/>
-            <span style={{fontSize:9,fontWeight:700,color:'#dc2626',letterSpacing:'0.01em'}}>REPRODUCED</span>
+              <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>Config</span>
+            </div>
+            <Ic n="ChevronRight" size={10} color="#cbd5e1"/>
+            {/* Steps */}
+            {steps.map((s,i)=>(
+              <React.Fragment key={s.n}>
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}}>
+                  <div style={{width:34,height:34,borderRadius:7,background:'#fff7ed',border:'1px solid #fed7aa',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <Ic n={s.icon} size={14} color={C}/>
+                  </div>
+                  <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>{s.label}</span>
+                </div>
+                {i<2 && <Ic n="ChevronRight" size={10} color="#cbd5e1"/>}
+              </React.Fragment>
+            ))}
+            <Ic n="ChevronRight" size={10} color="#cbd5e1"/>
+            {/* Verdict */}
+            <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
+              <div style={{background:'#fef2f2',border:`2px solid ${C}`,borderRadius:7,padding:'6px 8px',display:'flex',alignItems:'center',gap:4,width:'100%',justifyContent:'center'}}>
+                <Ic n="CheckCircle2" size={12} color={C}/>
+                <span style={{fontSize:9,fontWeight:700,color:'#dc2626'}}>REPRODUCED</span>
+              </div>
+              <span style={{fontSize:7,color:'#94a3b8',fontWeight:600}}>Verdict</span>
+            </div>
+          </div>
+          {/* Terminal — semantic output */}
+          <div style={{background:'#1e293b',borderRadius:5,padding:'6px 10px',display:'flex',flexDirection:'column',gap:3}}>
+            {[['#475569',false,'env initialized'],['#475569',false,'config applied'],['#86efac',true,'symptom confirmed → H1 ✓']].map(([col,hi,lbl],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5}}>
+                <div style={{width:4,height:4,borderRadius:'50%',background:col,flexShrink:0}}/>
+                <span style={{fontSize:8,fontFamily:'monospace',color:hi?'#86efac':'#64748b'}}>{lbl}</span>
+              </div>
+            ))}
           </div>
         </div>
-        {/* Abstract terminal output */}
-        <div style={{background:'#1e293b',borderRadius:5,padding:'7px 10px',display:'flex',flexDirection:'column',gap:4}}>
-          {[[1,'#334155'],[0.65,'#334155'],[0.8,'#86efac40']].map(([w,bg],i)=>(
-            <div key={i} style={{display:'flex',alignItems:'center',gap:5}}>
-              <div style={{width:5,height:5,borderRadius:'50%',background:i===2?'#86efac':'#475569',flexShrink:0}}/>
-              <div style={{height:4,borderRadius:2,background:bg,flex:w}}/>
-              {i===2 && <span style={{fontSize:7,fontFamily:'monospace',color:'#86efac',flexShrink:0}}>H1 ✓</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
+      );
+    },
   },
   escalation: {
     color:'#0f766e', icon:'Send',
     concept: 'Compress 4 stages of investigation into a package an engineer can act on immediately.',
-    graphic: () => (
-      <div style={{display:'flex',alignItems:'center',gap:5}}>
-        {/* 4 abstract stage circles with stage colors */}
-        <div style={{display:'flex',flexDirection:'column',gap:5,flexShrink:0}}>
-          {['#2563eb','#15803d','#6d28d9','#c2410c'].map((c,i)=>(
-            <div key={i} style={{width:22,height:22,borderRadius:'50%',background:`${c}18`,border:`2px solid ${c}60`,display:'flex',alignItems:'center',justifyContent:'center'}}>
-              <span style={{fontSize:8,fontWeight:700,color:c}}>{i+1}</span>
-            </div>
-          ))}
-        </div>
-        {/* SVG funnel lines + brain */}
-        <div style={{width:48,position:'relative',height:96,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-          <svg width="48" height="96" viewBox="0 0 48 96" style={{position:'absolute',inset:0}}>
-            <line x1="0" y1="11" x2="48" y2="48" stroke="#0f766e" strokeWidth="1" strokeOpacity="0.4"/>
-            <line x1="0" y1="32" x2="48" y2="48" stroke="#0f766e" strokeWidth="1" strokeOpacity="0.4"/>
-            <line x1="0" y1="64" x2="48" y2="48" stroke="#0f766e" strokeWidth="1" strokeOpacity="0.4"/>
-            <line x1="0" y1="85" x2="48" y2="48" stroke="#0f766e" strokeWidth="1" strokeOpacity="0.4"/>
-          </svg>
-          <div style={{position:'relative',zIndex:1,background:'#f0fdfa',border:'2px solid #5eead4',borderRadius:'50%',width:28,height:28,display:'flex',alignItems:'center',justifyContent:'center'}}>
-            <Ic n="BrainCircuit" size={13} color="#0f766e"/>
+    graphic: () => {
+      const C = '#0f766e';
+      return (
+        <div style={{display:'flex',alignItems:'stretch',gap:0,height:120}}>
+          {/* Zone 1 — 4 stage inputs */}
+          <div style={{width:56,display:'flex',flexDirection:'column',gap:4,paddingTop:6}}>
+            <span style={{fontSize:7,color:'#94a3b8',fontWeight:600,letterSpacing:'0.03em',marginBottom:1}}>STAGES</span>
+            {[['#2563eb','Kickoff'],['#15803d','Investig.'],['#6d28d9','Artefact'],['#c2410c','Repro']].map(([c,lbl],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:4,borderRadius:4,padding:'3px 6px',background:`${c}10`,border:`1px solid ${c}40`}}>
+                <div style={{width:6,height:6,borderRadius:'50%',background:c,flexShrink:0}}/>
+                <span style={{fontSize:8,color:c,fontWeight:600}}>{lbl}</span>
+              </div>
+            ))}
           </div>
-        </div>
-        {/* Abstract output doc — no specific content */}
-        <div style={{flex:1,background:'#f0fdfa',border:'1px solid #5eead4',borderRadius:7,padding:'8px 10px',display:'flex',flexDirection:'column',gap:5}}>
-          <div style={{display:'flex',alignItems:'center',gap:4}}>
-            <Ic n="FileCheck" size={11} color="#0f766e"/>
-            <div style={{flex:1,height:4,borderRadius:2,background:'#ccfbf1'}}/>
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:4}}>
-            <Ic n="Target" size={10} color="#dc2626"/>
-            <div style={{flex:1,height:4,borderRadius:2,background:'#fee2e2'}}/>
-          </div>
-          <div style={{display:'flex',gap:4}}>
-            <div style={{background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:4,padding:'3px 7px',display:'flex',alignItems:'center',gap:3}}>
-              <div style={{width:5,height:5,borderRadius:'50%',background:'#ef4444'}}/>
-              <div style={{width:16,height:3,borderRadius:2,background:'#fca5a5'}}/>
-            </div>
-            <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:4,padding:'3px 7px',display:'flex',alignItems:'center',gap:3}}>
-              <div style={{width:5,height:5,borderRadius:'50%',background:'#22c55e'}}/>
-              <div style={{width:16,height:3,borderRadius:2,background:'#86efac'}}/>
+          {/* Zone 2 — funnel + brain */}
+          <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <svg width="48" height="120" viewBox="0 0 48 120" style={{position:'absolute',inset:0}}>
+              <line x1="0" y1="23" x2="48" y2="60" stroke={C} strokeWidth="1" strokeOpacity="0.4"/>
+              <line x1="0" y1="42" x2="48" y2="60" stroke={C} strokeWidth="1" strokeOpacity="0.4"/>
+              <line x1="0" y1="78" x2="48" y2="60" stroke={C} strokeWidth="1" strokeOpacity="0.4"/>
+              <line x1="0" y1="97" x2="48" y2="60" stroke={C} strokeWidth="1" strokeOpacity="0.4"/>
+            </svg>
+            <div style={{position:'relative',zIndex:1,background:'#f0fdfa',border:`2px solid ${C}60`,borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center'}}>
+              <Ic n="BrainCircuit" size={14} color={C}/>
             </div>
           </div>
-          <div style={{display:'flex',alignItems:'center',gap:4}}>
-            <Ic n="Wrench" size={10} color="#0f766e"/>
-            <div style={{flex:1,height:4,borderRadius:2,background:'#ccfbf1'}}/>
+          {/* Zone 3 — escalation ticket fields */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:0,paddingTop:6}}>
+            <span style={{fontSize:7,color:C,fontWeight:700,letterSpacing:'0.04em',marginBottom:5}}>ESCALATION TICKET</span>
+            {[
+              {ic:'Target',    label:'Root cause', bg:'#fef2f2', bc:'#fca5a5', bar:'#fee2e2'},
+              {ic:'FileCode',  label:'Evidence',   bg:'#f8fafc', bc:'#e2e8f0', bar:'#e2e8f0'},
+              {ic:'Wrench',    label:'Workaround', bg:'#f0fdfa', bc:'#99f6e4', bar:'#ccfbf1'},
+            ].map((f,i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:5,borderRadius:4,padding:'5px 7px',marginBottom:4,background:f.bg,border:`1px solid ${f.bc}`}}>
+                <Ic n={f.ic} size={10} color={i===0?'#dc2626':i===2?C:'#64748b'}/>
+                <span style={{fontSize:8,color:'#334155',width:56,flexShrink:0}}>{f.label}</span>
+                <div style={{flex:1,height:4,borderRadius:2,background:f.bar}}/>
+              </div>
+            ))}
+            <div style={{display:'flex',gap:4,paddingLeft:2}}>
+              <div style={{background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:4,padding:'3px 8px',display:'flex',alignItems:'center',gap:3}}>
+                <div style={{width:5,height:5,borderRadius:'50%',background:'#ef4444'}}/>
+                <span style={{fontSize:7,color:'#dc2626',fontWeight:600}}>broken</span>
+              </div>
+              <div style={{background:'#f0fdf4',border:'1px solid #86efac',borderRadius:4,padding:'3px 8px',display:'flex',alignItems:'center',gap:3}}>
+                <div style={{width:5,height:5,borderRadius:'50%',background:'#22c55e'}}/>
+                <span style={{fontSize:7,color:'#15803d',fontWeight:600}}>fixed</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
 };
 
