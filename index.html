@@ -431,47 +431,101 @@
 const { useState, useEffect, useRef } = React;
 
 function WorkshopModeVisual() {
+  const widths = [92,75,100,68,84,55,40,78,62,88];
+
+  const HeatmapPreview = () => {
+    const rows = [['H1','●','○','●'],['H2','○','●','○'],['H3','●','●','○']];
+    return (
+      <div style={{display:'grid',gridTemplateColumns:'18px repeat(3,1fr)',gap:2}}>
+        {rows.map((row,i) => row.map((cell,j) => (
+          <div key={j} style={{textAlign:'center',padding:'2px',borderRadius:2,fontSize:8,fontWeight:j===0?700:400,
+            background:j===0?'transparent':cell==='●'?'#22c55e':'#e2e8f0',
+            color:j===0?'#2563eb':cell==='●'?'#fff':'#cbd5e1'}}>{cell}</div>
+        )))}
+      </div>
+    );
+  };
+
+  const EvidencePreview = () => (
+    <div style={{fontSize:7,fontFamily:'monospace'}}>
+      {[['agent.log','↑HIGH','H1 ✓'],['yaml','=MED','—']].map(([a,t,h],i) => (
+        <div key={i} style={{display:'flex',gap:3,borderBottom:'1px solid #e2e8f0',padding:'2px 0'}}>
+          <span style={{color:'#0891b2',width:38,flexShrink:0,overflow:'hidden'}}>{a}</span>
+          <span style={{color:t.startsWith('↑')?'#22c55e':'#f59e0b',width:30,flexShrink:0}}>{t}</span>
+          <span style={{color:'#6b7280'}}>{h}</span>
+        </div>
+      ))}
+    </div>
+  );
+
+  const DiffPreview = () => (
+    <div style={{fontSize:7,fontFamily:'monospace',lineHeight:1.8}}>
+      <div style={{background:'#fef2f2',color:'#dc2626',padding:'1px 4px',borderRadius:2}}>- exclude wins over include</div>
+      <div style={{background:'#f0fdf4',color:'#16a34a',padding:'1px 4px',borderRadius:2,marginTop:2}}>+ include checked first</div>
+    </div>
+  );
+
+  const TimelinePreview = () => (
+    <div style={{fontSize:7,lineHeight:1.9}}>
+      {[['✓','deploy env','#22c55e'],['✓','apply config','#22c55e'],['✗','logs absent','#ef4444']].map(([icon,label,c],i) => (
+        <div key={i} style={{display:'flex',alignItems:'center',gap:4}}>
+          <span style={{color:c,fontWeight:700}}>{icon}</span>
+          <span style={{color:'#6b7280'}}>{label}</span>
+        </div>
+      ))}
+      <div style={{fontWeight:700,color:'#ef4444',marginTop:1,fontSize:8}}>REPRODUCED ✓</div>
+    </div>
+  );
+
+  const SummaryPreview = () => (
+    <div style={{display:'flex',flexDirection:'column',gap:2}}>
+      <div style={{background:'#fef2f2',border:'1px solid #fca5a5',borderRadius:3,padding:'2px 5px',fontSize:7,color:'#dc2626',fontWeight:600}}>Root Cause — exclude overrides include</div>
+      <div style={{display:'flex',gap:2}}>
+        <div style={{flex:1,background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:3,padding:'2px 4px',fontSize:7,color:'#475569'}}>v7.43–7.45 broken</div>
+        <div style={{flex:1,background:'#f0fdf4',border:'1px solid #86efac',borderRadius:3,padding:'2px 4px',fontSize:7,color:'#15803d'}}>remove exclude</div>
+      </div>
+    </div>
+  );
+
   const stages = [
-    {n:1, label:'Kickoff',      icon:'⬡', color:'#2563eb', bg:'#eff6ff', border:'#bfdbfe', visual:'Heatmap',         desc:'H1 ● ○ ● ○\nH2 ○ ● ○ ○'},
-    {n:2, label:'Investigation',icon:'⬡', color:'#0891b2', bg:'#ecfeff', border:'#a5f3fc', visual:'Evidence table',  desc:'artifact | trust ↑\nquote   | H impact'},
-    {n:3, label:'Correlation',  icon:'⬡', color:'#6d28d9', bg:'#faf5ff', border:'#ddd6fe', visual:'Diff view',       desc:'- old line (red)\n+ new line (green)'},
-    {n:4, label:'Reproduction', icon:'⬡', color:'#c2410c', bg:'#fff7ed', border:'#fed7aa', visual:'Timeline',        desc:'✓ step 1 — pass\n✓ step 2 — pass\n✗ step 3 — FAIL'},
-    {n:5, label:'Escalation',   icon:'⬡', color:'#15803d', bg:'#f0fdf4', border:'#86efac', visual:'Summary card',    desc:'Root cause\nVersions · Workaround'},
+    {n:1,label:'Kickoff',      color:'#2563eb',bg:'#eff6ff',border:'#bfdbfe',visual:'Heatmap',        Preview:HeatmapPreview},
+    {n:2,label:'Investigation',color:'#0891b2',bg:'#ecfeff',border:'#a5f3fc',visual:'Evidence table', Preview:EvidencePreview},
+    {n:3,label:'Correlation',  color:'#6d28d9',bg:'#faf5ff',border:'#ddd6fe',visual:'Diff view',      Preview:DiffPreview},
+    {n:4,label:'Reproduction', color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',visual:'Timeline',       Preview:TimelinePreview},
+    {n:5,label:'Escalation',   color:'#15803d',bg:'#f0fdf4',border:'#86efac',visual:'Summary card',   Preview:SummaryPreview},
   ];
-  const widths = [92,75,100,68,84,55,40];
 
   return (
     <div style={{margin:'14px 0'}}>
       <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
 
-        {/* Left — without */}
-        <div style={{minWidth:120,background:'#f8fafc',border:'1.5px solid #e2e8f0',borderRadius:9,padding:'10px 12px'}}>
-          <div style={{fontSize:9,fontWeight:700,color:'#94a3b8',marginBottom:8,letterSpacing:'0.06em'}}>WITHOUT ROUTING</div>
-          {widths.map((w,i) => <div key={i} style={{height:6,background:'#e2e8f0',borderRadius:3,marginBottom:5,width:w+'%'}}/>)}
-          <div style={{height:6,background:'#e2e8f0',borderRadius:3,marginBottom:5,width:'90%'}}/>
-          <div style={{height:6,background:'#e2e8f0',borderRadius:3,marginBottom:5,width:'60%'}}/>
-          <div style={{height:6,background:'#e2e8f0',borderRadius:3,marginBottom:5,width:'80%'}}/>
+        {/* Left — without routing */}
+        <div style={{minWidth:110,background:'#f8fafc',border:'1.5px solid #e2e8f0',borderRadius:9,padding:'10px 12px'}}>
+          <div style={{fontSize:9,fontWeight:700,color:'#94a3b8',marginBottom:8,letterSpacing:'0.05em'}}>WITHOUT ROUTING</div>
+          {widths.map((w,i) => <div key={i} style={{height:5,background:'#e2e8f0',borderRadius:2,marginBottom:4,width:w+'%'}}/>)}
           <div style={{fontSize:8,color:'#cbd5e1',marginTop:6,fontStyle:'italic',textAlign:'center'}}>wall of markdown in chat</div>
         </div>
 
         {/* Arrow */}
-        <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',paddingTop:40,flexShrink:0}}>
-          <div style={{fontSize:18,color:'#7c3aed'}}>→</div>
-          <div style={{fontSize:7,color:'#a78bfa',fontWeight:800,letterSpacing:'0.06em',textAlign:'center',lineHeight:1.4}}>WORKSHOP<br/>MODE</div>
+        <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',paddingTop:50,flexShrink:0,gap:1}}>
+          <div style={{fontSize:16,color:'#7c3aed'}}>→</div>
+          <div style={{fontSize:7,color:'#a78bfa',fontWeight:800,letterSpacing:'0.05em',textAlign:'center',lineHeight:1.4}}>WORKSHOP<br/>MODE</div>
         </div>
 
-        {/* Right — 5 stage output cards */}
-        <div style={{flex:1,display:'flex',flexDirection:'column',gap:4}}>
-          <div style={{fontSize:9,fontWeight:700,color:'#7c3aed',marginBottom:2,letterSpacing:'0.06em'}}>WITH ROUTING — one visual file per stage</div>
+        {/* Right — 5 stage previews */}
+        <div style={{flex:1,display:'flex',flexDirection:'column',gap:5}}>
+          <div style={{fontSize:9,fontWeight:700,color:'#7c3aed',marginBottom:1,letterSpacing:'0.05em'}}>WITH ROUTING — one visual file per stage</div>
           {stages.map(s => (
-            <div key={s.n} style={{display:'flex',alignItems:'center',gap:6,background:s.bg,border:`1.5px solid ${s.border}`,borderRadius:6,padding:'5px 8px'}}>
-              <span style={{fontSize:9,fontWeight:700,color:s.color,flexShrink:0,width:14}}>{s.n}</span>
-              <span style={{fontSize:9,fontWeight:600,color:s.color,width:74,flexShrink:0}}>{s.label}</span>
-              <span style={{fontSize:8,fontWeight:700,color:'#fff',background:s.color,padding:'1px 5px',borderRadius:3,flexShrink:0}}>{s.visual}</span>
-              <span style={{fontSize:8,color:'#6b7280',fontFamily:'monospace',whiteSpace:'pre',overflow:'hidden',textOverflow:'ellipsis'}}>{s.desc.split('\n')[0]}</span>
+            <div key={s.n} style={{background:s.bg,border:`1.5px solid ${s.border}`,borderRadius:7,padding:'7px 9px'}}>
+              <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:5}}>
+                <span style={{fontSize:9,fontWeight:700,color:s.color,width:12,flexShrink:0}}>{s.n}</span>
+                <span style={{fontSize:9,fontWeight:700,color:s.color,flex:1}}>{s.label}</span>
+                <span style={{fontSize:7,fontWeight:700,color:'#fff',background:s.color,padding:'1px 6px',borderRadius:3}}>{s.visual}</span>
+              </div>
+              <s.Preview />
             </div>
           ))}
-          <div style={{fontSize:8,color:'#a78bfa',fontStyle:'italic',marginTop:2,textAlign:'right'}}>saved to ~/Desktop/workshop/ · no chat output</div>
+          <div style={{fontSize:8,color:'#a78bfa',fontStyle:'italic',textAlign:'right',marginTop:1}}>saved to ~/Desktop/workshop/ · no chat output</div>
         </div>
 
       </div>
