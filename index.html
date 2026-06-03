@@ -769,15 +769,53 @@ const STAGE_VISUALS = {
     color:'#2563eb', icon:'SearchCheck',
     concept: 'Extract structure from noise — before opening a single artifact.',
     inputs: [
-      {icon:'FileText',  label:'Customer ticket', sub:'raw, unstructured text'},
+      {icon:'FileText', label:'Customer ticket', sub:'raw, unstructured text'},
     ],
-    actions: [
-      {icon:'SplitSquareHorizontal', text:'Splits into Statement / Evidence / Hypothesis'},
-      {icon:'Shield',                text:'Assigns trust level to each element'},
-      {icon:'TrendingDown',          text:'Caps confidence ≤ 30% — no artifact, no claim'},
-      {icon:'Lightbulb',             text:'Proposes hypotheses you might not see yet'},
-      {icon:'ClipboardList',         text:'Lists what artifacts are needed and why'},
-    ],
+    graphic: () => (
+      <div style={{display:'flex',flexDirection:'column',gap:6,padding:'2px 0'}}>
+        {/* Noise → structure */}
+        <div style={{display:'flex',alignItems:'center',gap:6}}>
+          {/* Noisy ticket blob */}
+          <div style={{flex:1,background:'#f1f5f9',borderRadius:5,padding:'5px 7px',display:'flex',flexDirection:'column',gap:3}}>
+            {[[90],[70,40],[85],[55,75],[40]].map((ws,i)=>(
+              <div key={i} style={{display:'flex',gap:3}}>
+                {ws.map((w,j)=><div key={j} style={{height:4,borderRadius:2,background:'#cbd5e1',width:`${w}%`}}/>)}
+              </div>
+            ))}
+          </div>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:1,flexShrink:0}}>
+            <Ic n="BrainCircuit" size={14} color="#2563eb"/>
+            <Ic n="ArrowRight" size={10} color="#94a3b8"/>
+          </div>
+          {/* Structured board */}
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:3}}>
+            {[['#22c55e','S'],['#f59e0b','E'],['#ef4444','H']].map(([c,l],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:4,borderRadius:4,padding:'3px 5px',borderLeft:`3px solid ${c}`,background:'#fff',boxShadow:'0 1px 2px #0001'}}>
+                <span style={{fontSize:7,fontWeight:800,color:c,width:8}}>{l}</span>
+                <div style={{flex:1,height:4,borderRadius:2,background:`${c}40`}}/>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Confidence cap */}
+        <div style={{display:'flex',alignItems:'center',gap:5,background:'#eff6ff',borderRadius:4,padding:'4px 7px'}}>
+          <Ic n="TrendingDown" size={10} color="#2563eb"/>
+          <span style={{fontSize:9,color:'#1e40af',fontWeight:500}}>Confidence capped at</span>
+          <div style={{flex:1,background:'#bfdbfe',borderRadius:3,height:5,overflow:'hidden'}}><div style={{width:'20%',background:'#2563eb',height:'100%',borderRadius:3}}/></div>
+          <span style={{fontSize:9,fontWeight:700,color:'#2563eb'}}>≤30%</span>
+        </div>
+        <div style={{display:'flex',gap:4}}>
+          <div style={{flex:1,background:'#eff6ff',borderRadius:4,padding:'4px 6px',display:'flex',alignItems:'center',gap:4}}>
+            <Ic n="Lightbulb" size={10} color="#2563eb"/>
+            <span style={{fontSize:9,color:'#1e40af'}}>Hypotheses proposed</span>
+          </div>
+          <div style={{flex:1,background:'#eff6ff',borderRadius:4,padding:'4px 6px',display:'flex',alignItems:'center',gap:4}}>
+            <Ic n="ClipboardList" size={10} color="#2563eb"/>
+            <span style={{fontSize:9,color:'#1e40af'}}>Artifacts needed</span>
+          </div>
+        </div>
+      </div>
+    ),
   },
   investigation: {
     color:'#15803d', icon:'Microscope',
@@ -787,12 +825,42 @@ const STAGE_VISUALS = {
       {icon:'FileCode',  label:'Runtime dump',    sub:'live or captured state'},
       {icon:'BookOpen',  label:'Documentation',   sub:'official reference'},
     ],
-    actions: [
-      {icon:'GitCompare',    text:'Cross-compares all files simultaneously'},
-      {icon:'Quote',         text:'Quotes exact artifact lines — no paraphrasing'},
-      {icon:'AlertTriangle', text:'Flags every config ↔ runtime mismatch'},
-      {icon:'TrendingUp',    text:'Updates hypothesis trust levels with evidence'},
-    ],
+    graphic: () => (
+      <div style={{display:'flex',flexDirection:'column',gap:6,padding:'2px 0'}}>
+        {/* Files → comparison table */}
+        <div style={{display:'flex',alignItems:'flex-start',gap:6}}>
+          <div style={{display:'flex',flexDirection:'column',gap:3,flexShrink:0}}>
+            {[['FileCode','config.yaml'],['FileCode','runtime.json'],['BookOpen','docs']].map(([ic,lbl],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:4,background:'#f1f5f9',border:'1px solid #e2e8f0',borderRadius:4,padding:'3px 6px'}}>
+                <Ic n={ic} size={9} color="#64748b"/>
+                <span style={{fontSize:8,color:'#64748b',fontFamily:'monospace'}}>{lbl}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:1,flexShrink:0,paddingTop:10}}>
+            <Ic n="BrainCircuit" size={13} color="#15803d"/>
+            <Ic n="ArrowRight" size={10} color="#94a3b8"/>
+          </div>
+          <div style={{flex:1,display:'flex',flexDirection:'column',gap:2}}>
+            {[['config.yaml','"X"','HIGH',false],['runtime.json','"X,Y"','MED',true],['docs','"B wins"','HIGH',false]].map(([src,val,tr,gap],i)=>(
+              <div key={i} style={{display:'flex',gap:3,alignItems:'center',borderRadius:3,padding:'3px 5px',background:gap?'#fef3c7':'#f8fafc',border:`1px solid ${gap?'#f59e0b':'#e2e8f0'}`}}>
+                <span style={{fontSize:7,fontFamily:'monospace',color:'#475569',width:44,flexShrink:0,overflow:'hidden'}}>{src}</span>
+                <span style={{fontSize:7,fontFamily:'monospace',color:'#64748b',flex:1,fontStyle:'italic',overflow:'hidden'}}>{val}</span>
+                <span style={{fontSize:7,fontWeight:700,color:tr==='HIGH'?'#15803d':'#d97706',flexShrink:0}}>{tr}</span>
+                {gap && <span style={{fontSize:7,fontWeight:700,color:'#b45309',flexShrink:0}}>GAP!</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Confidence rise */}
+        <div style={{display:'flex',alignItems:'center',gap:5,background:'#f0fdf4',borderRadius:4,padding:'4px 7px'}}>
+          <Ic n="TrendingUp" size={10} color="#15803d"/>
+          <span style={{fontSize:9,color:'#166534',fontWeight:500}}>Confidence raised to</span>
+          <div style={{flex:1,background:'#bbf7d0',borderRadius:3,height:5,overflow:'hidden'}}><div style={{width:'60%',background:'#15803d',height:'100%',borderRadius:3}}/></div>
+          <span style={{fontSize:9,fontWeight:700,color:'#15803d'}}>~60%</span>
+        </div>
+      </div>
+    ),
   },
   artefact: {
     color:'#6d28d9', icon:'GitMerge',
@@ -801,12 +869,39 @@ const STAGE_VISUALS = {
       {icon:'ScrollText', label:'Log files',  sub:'timestamped component logs'},
       {icon:'Github',     label:'Codebase',   sub:'source + git history'},
     ],
-    actions: [
-      {icon:'Timer',         text:'Correlates timestamps across all log sources'},
-      {icon:'Search',        text:'Searches and reads relevant source files'},
-      {icon:'Network',       text:'Traces function call paths end-to-end'},
-      {icon:'GitCommitHorizontal', text:'git blame → pinpoints the introducing commit'},
-    ],
+    graphic: () => (
+      <div style={{display:'flex',flexDirection:'column',gap:6,padding:'2px 0'}}>
+        {/* Timeline correlation */}
+        <div style={{background:'#faf5ff',borderRadius:5,padding:'6px 8px',display:'flex',flexDirection:'column',gap:4}}>
+          {[['comp-A','10:42:01','"filter eval start"',false],['comp-B','10:42:01','"rule B wins → drop"',true]].map(([src,ts,ev,match],i)=>(
+            <div key={i} style={{display:'flex',alignItems:'center',gap:5}}>
+              <span style={{fontSize:8,fontWeight:600,color:'#6d28d9',width:38,flexShrink:0}}>{src}</span>
+              <span style={{fontSize:8,fontFamily:'monospace',color:'#94a3b8',width:44,flexShrink:0}}>{ts}</span>
+              <div style={{flex:1,height:4,borderRadius:2,background:match?'#c4b5fd':'#e2e8f0',position:'relative'}}>
+                {match && <div style={{position:'absolute',right:0,top:-3,width:10,height:10,borderRadius:'50%',background:'#6d28d9',border:'2px solid #fff',boxShadow:'0 0 0 1px #6d28d9'}}/>}
+              </div>
+              <span style={{fontSize:7,color:'#6b7280',fontStyle:'italic',width:72,flexShrink:0,overflow:'hidden'}}>{ev}</span>
+            </div>
+          ))}
+          <div style={{display:'flex',justifyContent:'flex-end'}}>
+            <div style={{display:'flex',alignItems:'center',gap:3,background:'#6d28d9',borderRadius:3,padding:'2px 6px'}}>
+              <Ic n="MapPin" size={8} color="#fff"/>
+              <span style={{fontSize:7,color:'#fff',fontWeight:700}}>timestamp match</span>
+            </div>
+          </div>
+        </div>
+        {/* Code diff */}
+        <div style={{background:'#1e293b',borderRadius:5,padding:'5px 8px',display:'flex',flexDirection:'column',gap:2}}>
+          <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:2}}>
+            <Ic n="FileCode" size={9} color="#94a3b8"/>
+            <span style={{fontSize:8,fontFamily:'monospace',color:'#94a3b8'}}>filter.go:87</span>
+            <span style={{fontSize:7,background:'#7c3aed',color:'#fff',borderRadius:3,padding:'1px 5px',marginLeft:'auto'}}>git blame</span>
+          </div>
+          <div style={{fontSize:8,fontFamily:'monospace',color:'#fca5a5',paddingLeft:4}}>- rule A: allow</div>
+          <div style={{fontSize:8,fontFamily:'monospace',color:'#86efac',paddingLeft:4,background:'#86efac18',borderRadius:2}}>+ rule B: deny ← wins</div>
+        </div>
+      </div>
+    ),
   },
   reproduction: {
     color:'#c2410c', icon:'FlaskConical',
@@ -814,12 +909,36 @@ const STAGE_VISUALS = {
     inputs: [
       {icon:'Settings', label:'Customer config values', sub:'exact values from artifact'},
     ],
-    actions: [
-      {icon:'ListChecks',   text:'Writes full deployment plan + commands'},
-      {icon:'Container',    text:'Spins up environment matching customer setup'},
-      {icon:'Bug',          text:'Applies debug flags and interprets output'},
-      {icon:'CheckCircle2', text:'Delivers REPRODUCED / NOT REPRODUCED verdict'},
-    ],
+    graphic: () => (
+      <div style={{display:'flex',flexDirection:'column',gap:5,padding:'2px 0'}}>
+        {/* Step sequence */}
+        {[
+          {n:1, label:'Deploy environment + debug flags', done:true,  color:'#22c55e'},
+          {n:2, label:'Apply exact customer config',      done:true,  color:'#22c55e'},
+          {n:3, label:'Run component — observe logs',     done:true,  color:'#22c55e'},
+          {n:4, label:'Symptom present',                  done:false, color:'#ef4444'},
+        ].map((s,i)=>(
+          <div key={i} style={{display:'flex',alignItems:'center',gap:6}}>
+            <div style={{width:18,height:18,borderRadius:'50%',background:s.done?'#22c55e':'#ef4444',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              <Ic n={s.done?'Check':'X'} size={9} color="#fff"/>
+            </div>
+            {i<3 && <div style={{position:'absolute',width:1,height:8,background:'#e2e8f0',marginTop:26,marginLeft:8}}/>}
+            <span style={{fontSize:9,color:'#374151'}}>{s.label}</span>
+          </div>
+        ))}
+        {/* Terminal evidence */}
+        <div style={{background:'#1e293b',borderRadius:4,padding:'4px 8px',fontSize:8,fontFamily:'monospace',color:'#86efac',marginTop:2}}>
+          "rule B applied: item X skipped" → H1 confirmed
+        </div>
+        {/* Verdict */}
+        <div style={{display:'flex',justifyContent:'center'}}>
+          <div style={{background:'#fef2f2',border:'2px solid #ef4444',borderRadius:6,padding:'4px 14px',display:'flex',alignItems:'center',gap:5}}>
+            <Ic n="CheckCircle2" size={12} color="#ef4444"/>
+            <span style={{fontSize:11,fontWeight:700,color:'#dc2626',letterSpacing:'0.02em'}}>REPRODUCED</span>
+          </div>
+        </div>
+      </div>
+    ),
   },
   escalation: {
     color:'#0f766e', icon:'Send',
@@ -827,13 +946,47 @@ const STAGE_VISUALS = {
     inputs: [
       {icon:'Layers', label:'S1–S4 findings', sub:'all investigation output so far'},
     ],
-    actions: [
-      {icon:'Target',      text:'One-sentence root cause with artifact:line citation'},
-      {icon:'Table2',      text:'Structured evidence table with trust levels'},
-      {icon:'Tag',         text:'Affected version range + first fixed version'},
-      {icon:'Wrench',      text:'Workaround and customer-facing message'},
-      {icon:'FileCheck',   text:'Complete escalation ticket draft — ready to send'},
-    ],
+    graphic: () => (
+      <div style={{display:'flex',flexDirection:'column',gap:6,padding:'2px 0'}}>
+        {/* Funnel: 4 sources → 1 doc */}
+        <div style={{display:'flex',alignItems:'center',gap:4}}>
+          <div style={{display:'flex',flexDirection:'column',gap:3,flexShrink:0}}>
+            {[['S1','#2563eb'],['S2','#15803d'],['S3','#6d28d9'],['S4','#c2410c']].map(([l,c])=>(
+              <div key={l} style={{width:22,height:16,borderRadius:3,background:`${c}20`,border:`1px solid ${c}60`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <span style={{fontSize:7,fontWeight:700,color:c}}>{l}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',position:'relative',height:82}}>
+            <svg width="100%" height="82" viewBox="0 0 60 82" preserveAspectRatio="none" style={{position:'absolute',inset:0}}>
+              {[[9],[25],[50],[73]].map((y,i)=>(
+                <line key={i} x1="0" y1={y} x2="60" y2="41" stroke="#0f766e" strokeWidth="1" strokeOpacity="0.4"/>
+              ))}
+            </svg>
+            <Ic n="BrainCircuit" size={16} color="#0f766e" style={{position:'relative',zIndex:1}}/>
+          </div>
+          {/* Output doc */}
+          <div style={{flex:1.4,background:'#f0fdfa',border:'1px solid #99f6e4',borderRadius:6,padding:'6px 8px',display:'flex',flexDirection:'column',gap:3}}>
+            <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:1}}>
+              <Ic n="FileCheck" size={10} color="#0f766e"/>
+              <span style={{fontSize:8,fontWeight:700,color:'#0f766e'}}>Escalation ticket</span>
+            </div>
+            <div style={{display:'flex',alignItems:'flex-start',gap:3}}>
+              <Ic n="Target" size={8} color="#dc2626" style={{marginTop:1}}/>
+              <span style={{fontSize:8,color:'#374151',fontStyle:'italic',lineHeight:1.3}}>rule B overrides A at :87</span>
+            </div>
+            <div style={{display:'flex',gap:3}}>
+              <div style={{background:'#fef2f2',borderRadius:3,padding:'2px 5px',fontSize:7,color:'#dc2626'}}>v1.2–v1.4</div>
+              <div style={{background:'#f0fdf4',borderRadius:3,padding:'2px 5px',fontSize:7,color:'#15803d'}}>fix: v1.5</div>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:3}}>
+              <Ic n="Wrench" size={8} color="#0f766e"/>
+              <span style={{fontSize:7,color:'#374151'}}>Remove X from rule B</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
   },
 };
 
@@ -1679,21 +1832,12 @@ function App() {
                                 ))}
                               </div>
                             </div>
-                            {/* Right — AI does */}
+                            {/* Right — AI should */}
                             <div style={{padding:'10px 12px',background:`${sv.color}04`}}>
                               <div style={{fontSize:8,fontWeight:700,letterSpacing:'0.06em',textTransform:'uppercase',color:sv.color,marginBottom:8,display:'flex',alignItems:'center',gap:4}}>
-                                <Ic n="BrainCircuit" size={10} color={sv.color}/> AI does
+                                <Ic n="BrainCircuit" size={10} color={sv.color}/> AI should
                               </div>
-                              <div style={{display:'flex',flexDirection:'column',gap:5}}>
-                                {sv.actions.map((a,i)=>(
-                                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:6}}>
-                                    <div style={{width:18,height:18,borderRadius:4,background:`${sv.color}15`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:1}}>
-                                      <Ic n={a.icon} size={10} color={sv.color}/>
-                                    </div>
-                                    <span style={{fontSize:10,color:'#374151',lineHeight:1.4}}>{a.text}</span>
-                                  </div>
-                                ))}
-                              </div>
+                              {sv.graphic && sv.graphic()}
                             </div>
                           </div>
                         </div>
