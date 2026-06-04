@@ -780,7 +780,7 @@ const HV = {
 const STAGE_VISUALS = {
   triage: {
     color:'#2563eb', icon:'SearchCheck',
-    concept: 'Extract structure from noise — before opening a single artifact.',
+    concept: 'Turn the customer message into a structured starting point.',
     graphic: () => {
       const C = '#2563eb';
       return (
@@ -827,7 +827,7 @@ const STAGE_VISUALS = {
   },
   investigation: {
     color:'#15803d', icon:'Microscope',
-    concept: 'Compare what was configured vs. what actually ran — find the gap.',
+    concept: 'Surface the discrepancy between expected and observed behavior.',
     graphic: () => {
       const C = '#15803d';
       const rows = [
@@ -880,7 +880,7 @@ const STAGE_VISUALS = {
   },
   artefact: {
     color:'#6d28d9', icon:'GitMerge',
-    concept: 'Pinpoint the exact code location and commit where the behavior lives.',
+    concept: 'Cross-reference artefacts into a single, locatable finding.',
     graphic: () => {
       const C = '#6d28d9';
       const rightRows = [
@@ -938,7 +938,7 @@ const STAGE_VISUALS = {
   },
   reproduction: {
     color:'#c2410c', icon:'FlaskConical',
-    concept: 'Verify the hypothesis by reproducing the symptom in a controlled sandbox.',
+    concept: 'Confirm the finding holds in a controlled environment.',
     graphic: () => {
       const C = '#c2410c';
       const leftRows = [
@@ -992,7 +992,7 @@ const STAGE_VISUALS = {
   },
   escalation: {
     color:'#0f766e', icon:'Send',
-    concept: 'Compress 4 stages of investigation into a package an engineer can act on immediately.',
+    concept: 'Package the full investigation into an actionable handoff.',
     graphic: () => {
       const C = '#0f766e';
       return (
@@ -1042,7 +1042,7 @@ const STAGE_VISUALS = {
   },
   retrospective: {
     color:'#d97706', icon:'TrendingUp',
-    concept: 'Turn 5 stages of evidence into a hypothesis confidence timeline.',
+    concept: 'Reflect on how confidence evolved across every stage.',
     graphic: () => {
       const C = '#d97706';
       const xs = [18,52,86,120,154];
@@ -2083,8 +2083,8 @@ function App() {
                       <div className="checklist-label" style={{marginBottom:6}}>Result prompt</div>
                       <div style={{display:'flex',background:'#f1f5f9',borderRadius:8,padding:3,marginBottom:10,gap:2}}>
                         {[
-                          {id:'light',    label:'Light',    icon:'Zap'},
-                          {id:'complete', label:'Complete', icon:'BookOpen'},
+                          {id:'light',    label:'Light (result)',    icon:'Zap'},
+                          {id:'complete', label:'Complete (result)', icon:'BookOpen'},
                         ].map(tab => {
                           const active = promptTab === tab.id;
                           return (
