@@ -1947,8 +1947,13 @@ function App() {
                   </button>
                   <button className="toggle-btn" onClick={() => setEditing(true)}>Change message</button>
                   {totalTags > 0 && (
-                    <button className="btn btn-primary" style={{ fontSize: 12, padding: "4px 12px" }} onClick={handleGenerate}>
-                      Generate prompt block
+                    <button className="btn btn-primary" style={{ fontSize: 12, padding: "4px 12px" }} onClick={() => {
+                      const block = generatePromptBlock(lines, tags, ELEMENTS);
+                      navigator.clipboard.writeText(block);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                    }}>
+                      {copied ? <><Ic n="Check" size={11}/> Copied!</> : <><Ic n="Copy" size={11}/> Copy prompt block</>}
                     </button>
                   )}
                 </div>
@@ -2199,23 +2204,6 @@ function App() {
               );
             })()}
 
-            {/* Prompt block output */}
-            {promptBlock && (
-              <>
-                <hr className="divider" />
-                <div className="prompt-panel">
-                  <div className="prompt-panel-header">
-                    <span className="prompt-panel-title">Annotated prompt block</span>
-                    <div className="spacer" />
-                    <button className="btn btn-ghost" style={{ fontSize: 12, padding: "4px 12px", marginLeft: 8 }} onClick={() => handleCopyPrompt(promptBlock)}>
-                      {copied ? "Copied!" : "Copy"}
-                    </button>
-                    <button className="toggle-btn" style={{ marginLeft: 4 }} onClick={() => setPromptBlock(null)}>✕</button>
-                  </div>
-                  <pre className="prompt-output">{promptBlock}</pre>
-                </div>
-              </>
-            )}
           </>
         ))}
       </div>
