@@ -1699,7 +1699,7 @@ function PillarPrompt({ text }) {
     remaining = next ? afterHeader.slice(next.index) : '';
   }
   if (parts.every(p => !p.header)) {
-    return <pre style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'12px 14px',margin:0,color:'#1f2328'}}>{text}</pre>;
+    return <pre style={{fontFamily:'"SFMono-Regular",Consolas,monospace',fontSize:11.5,lineHeight:1.7,whiteSpace:'pre-wrap',padding:'12px 14px',margin:0,color:'#1f2328'}}>{text}</pre>;
   }
   return (
     <div>
@@ -2138,7 +2138,9 @@ function App() {
                       )}
                       {promptTab === 'light' && stage.promptLight && (
                         <div className="stage-prompt-wrap">
-                          <pre className="stage-prompt">{stage.promptLight}</pre>
+                          <div className="stage-prompt" style={{padding:0,overflow:'hidden'}}>
+                            <PillarPrompt text={stage.promptLight}/>
+                          </div>
                           <button className="stage-copy-btn" onClick={() => { navigator.clipboard.writeText(stage.promptLight); setCopiedStage(stage.id + "_light"); setTimeout(() => setCopiedStage(null), 2000); }}>
                             {copiedStage === stage.id + "_light" ? <><Ic n="Check" size={11}/> Copied!</> : <><Ic n="Copy" size={11}/> Copy</>}
                           </button>
@@ -2146,7 +2148,9 @@ function App() {
                       )}
                       {promptTab === 'complete' && (
                         <div className="stage-prompt-wrap">
-                          <pre className="stage-prompt">{renderPrompt(stage.prompt)}</pre>
+                          <div className="stage-prompt" style={{padding:0,overflow:'hidden'}}>
+                            <PillarPrompt text={renderPrompt(stage.prompt)}/>
+                          </div>
                           <button className="stage-copy-btn" onClick={() => copyPrompt(stage)}>
                             {copiedStage === stage.id ? <><Ic n="Check" size={11}/> Copied!</> : <><Ic n="Copy" size={11}/> Copy</>}
                           </button>
