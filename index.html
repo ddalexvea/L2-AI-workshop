@@ -1133,87 +1133,87 @@ const L2_STAGES = [
     id: "triage", label: "Kickoff", alias: ";p_s_1",
     color: "#2563eb", bg: "#eff6ff", border: "#bfdbfe",
     goal: "Label every part of the customer message as Statement, Evidence, Hypothesis, or Missing Info — before opening a single artifact. Build the investigation board and cap confidence at ~20%.",
-    steps: ["What is the customer actually reporting vs. what could be their assumption?", "How confident should I be right now — with zero artifacts in hand?", "What would I need to see to believe or disprove each hypothesis?", "Can I restate the whole problem in one sentence the customer would agree with?"],
+    steps: ["What is the customer actually reporting, and what might be their assumption?", "How confident should I be right now — with no artifacts in hand?", "What would I need to see to confirm or disprove each hypothesis?", "Can I restate the entire problem in one sentence the customer would agree with?"],
     promptLight: `INSTRUCTIONS:
-Apply the investigation framework to the customer message below:
-1. Restate the problem in one sentence
-2. Build the Investigation Board — Statement, Evidence, Hypothesis — with trust level for each
-3. Propose 1–3 initial hypotheses (confidence max 30%)
-4. For each element and hypothesis, name the artifact that would confirm or refute it and why
+Apply the investigation framework to the customer message:
+1. Restate the problem in one sentence.
+2. Build the Investigation Board — label each part as Statement, Evidence, or Hypothesis, and assign a trust level.
+3. Propose 1–3 initial hypotheses (maximum confidence: 30%).
+4. For each element and hypothesis, identify the artifact that would confirm or refute it, and explain why.
 
 REASONING:
-Quote exact customer wording for each trust level, or write "no evidence yet".
-Infer artifact candidates from product area and symptoms — do not use a fixed list.
+Quote the exact customer wording for each trust level assignment, or write "no evidence yet".
+Infer artifact candidates from the product area and reported symptoms — do not use a fixed list.
 
 OUTPUT FORMAT:
 Problem restatement + elements table + artifact decision table`,
     prompt: `CONTEXT:
-Stage 1 — Kickoff. Starting a ticket investigation. Working in 5 stages: Kickoff, Investigation, Artefact Correlation, Reproduction, and Escalation.
+Stage 1 — Kickoff. This is the start of a structured ticket investigation across 5 stages: Kickoff, Investigation, Artefact Correlation, Reproduction, and Escalation.
 
 INSTRUCTIONS:
-Using the customer message below, complete in order:
-1. Restate the problem in one sentence
-2. List all investigation elements: Statement, Evidence, Hypothesis
-3. Assign a trust level to each: Customer Claim / Unverified / Speculative / Low / Medium / High
-4. Propose 1-3 initial hypotheses with confidence % (max 30% at this stage). Never modify an existing hypothesis — only add new ones, always at a lower confidence than the current highest.
-5. List every artifact or piece of information still needed to verify each element, and for each one state why it is required
+Using the customer message, complete the following steps in order:
+1. Restate the problem in one sentence.
+2. List all investigation elements and classify each as: Statement, Evidence, or Hypothesis.
+3. Assign a trust level to each element: Customer Claim / Unverified / Speculative / Low / Medium / High.
+4. Propose 1–3 initial hypotheses with a confidence percentage (maximum 30% at this stage). Never modify an existing hypothesis — only add new ones, each at a lower confidence than the current highest.
+5. List every artifact or piece of information needed to verify each element, and explain in one sentence why each is required.
 
 REASONING:
-For each trust level, quote the exact customer wording that justified it, or write "no evidence yet".
-Do not include Root Cause or Workaround rows — those are determined in later stages.
-Minimum artifact rule: infer artifact candidates from the product area, environment, and symptoms — do not use a fixed list. For each candidate, decide needed or not needed and justify why in one sentence.
+For each trust level, quote the exact customer wording that justifies it, or write "no evidence yet".
+Do not include Root Cause or Workaround rows — these are determined in later stages.
+Infer artifact candidates from the product area, environment, and reported symptoms — do not use a fixed list. For each candidate, state whether it is needed and justify the decision in one sentence.
 
 EXAMPLES:
-| Element | Content | Trust | Justification |
-|---------|---------|-------|---------------|
-| Statement | [restate the symptom] | Customer Claim | "[exact customer quote]" |
-| H1 | [possible cause] | Speculative | no artifact evidence yet |
+| Element   | Content               | Trust          | Justification              |
+|-----------|-----------------------|----------------|----------------------------|
+| Statement | [restate the symptom] | Customer Claim | "[exact customer quote]"   |
+| H1        | [possible cause]      | Speculative    | No artifact evidence yet.  |
 
 Artifact decision table:
-| Artifact | Needed | Why |
-|----------|--------|-----|
-| [artifact type] | YES/NO | [one sentence reason] |
+| Artifact        | Needed | Why                        |
+|-----------------|--------|----------------------------|
+| [artifact type] | YES/NO | [one-sentence reason]      |
 
 OUTPUT FORMAT:
-1-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.`,
+One-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.`,
   },
   {
     id: "investigation", label: "Investigation", alias: ";p_s_2",
     color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0",
-    goal: "Cross-reference artifacts against each hypothesis. For each artifact, determine whether it confirms, refutes, or is inconclusive. Find the gap between config written and config loaded at runtime, and update confidence with direct artifact quotes.",
-    steps: ["Is what the customer configured actually what the product loaded at runtime?", "Where could a gap exist between config written and config running?", "Does the official documentation say anything about how these settings interact?", "Can I raise my confidence — and if so, what exact line justifies it?"],
+    goal: "Cross-reference artifacts against each hypothesis. For each artifact, determine whether it confirms, refutes, or is inconclusive. Find the gap between what was configured and what was loaded at runtime, and update confidence using direct artifact quotes.",
+    steps: ["Is what the customer configured actually what the product loaded at runtime?", "Where could a gap exist between the written config and the running config?", "Does the official documentation describe how these settings interact?", "Can I justify a confidence increase — and if so, which exact artifact line supports it?"],
     promptLight: `INSTRUCTIONS:
-Stage 2 — artifacts are now available. Using the Stage 1 findings:
-1. Confirm the customer's claimed settings are present in the config artifact
-2. Confirm the product loaded those settings at runtime
-3. Note any gap between config written and config loaded
-4. Check the official documentation for explicit mention of the interaction between the relevant settings
-5. Update trust levels and confidence % — direct artifact quote required for every change
+Stage 2 — Artifacts are now available. Using the Stage 1 findings, complete the following steps:
+1. Confirm that the customer's claimed settings are present in the configuration artifact.
+2. Confirm that the product loaded those settings at runtime.
+3. Note any gap between what was written in the config and what was actually loaded.
+4. Check the official documentation for any explicit mention of how the relevant settings interact.
+5. Update trust levels and confidence percentages — a direct artifact quote is required for every change.
 
 REASONING:
-No trust change without a direct quote from the artifact.
+Do not change any trust level without a direct quote from the artifact.
 
 OUTPUT FORMAT:
 Updated elements table + evidence table + updated confidence % + one key finding sentence`,
     prompt: `CONTEXT:
-Stage 2 — Investigation. Stage 1 identified initial hypotheses. Artifacts are now available.
+Stage 2 — Investigation. Stage 1 identified the initial hypotheses. Artifacts are now available for analysis.
 
 INSTRUCTIONS:
-Using the artifacts identified in Stage 1, complete in order:
-1. Examine the configuration artifact: confirm the customer's claimed settings are present
-2. Examine the runtime artifact: confirm the product loaded those settings at runtime
-3. Note any gap between claimed config and actual loaded config
-4. Check the official documentation for explicit mention of the interaction between the relevant settings
-5. Update each element's trust level based on direct artifact evidence
-6. Update hypothesis confidence %
+Using the artifacts identified in Stage 1, complete the following steps in order:
+1. Examine the configuration artifact and confirm that the customer's claimed settings are present.
+2. Examine the runtime artifact and confirm that those settings were loaded by the product.
+3. Identify any gap between the claimed configuration and the actual loaded configuration.
+4. Check the official documentation for explicit guidance on how the relevant settings interact.
+5. Update each element's trust level based on direct artifact evidence.
+6. Update the confidence percentage for each hypothesis.
 
 REASONING:
-For each trust level change, quote the exact line from the artifact. Do not change trust without a direct quote.
+For every trust level change, quote the exact line from the artifact. Do not update trust without a direct quote.
 
 EXAMPLES:
-| Finding | Artifact | Quote | Impact on H1 |
-|---------|----------|-------|-------------|
-| [what was found] | [artifact name] | "[exact line]" | Supports/Refutes H1 |
+| Finding          | Artifact        | Quote          | Impact on H1     |
+|------------------|-----------------|----------------|------------------|
+| [what was found] | [artifact name] | "[exact line]" | Supports/Refutes |
 
 OUTPUT FORMAT:
 Updated elements table + evidence table + updated hypothesis confidence % + one key finding sentence.`,
@@ -1221,46 +1221,46 @@ Updated elements table + evidence table + updated hypothesis confidence % + one 
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
-    goal: "Correlate timestamps across log sources, locate the exact file and function responsible, and identify when the behavior changed. The output is a precise code or log reference — not a theory.",
-    steps: ["How do timestamps and error patterns line up across all available log sources?", "Where in the product codebase is the component responsible for this behavior?", "Which rule or function wins when two settings conflict — and when did that change?", "Can I describe the observed behavior precisely, with a log line or code reference to back it up?"],
+    goal: "Correlate timestamps across log sources, locate the exact file and function responsible, and identify when the behavior changed. The output must be a precise code or log reference — not a theory.",
+    steps: ["How do timestamps and error patterns align across all available log sources?", "Which component in the product codebase is responsible for this behavior?", "Which rule or function takes precedence when two settings conflict — and when did that change?", "Can I describe the observed behavior precisely, backed by a specific log line or code reference?"],
     promptLight: `INSTRUCTIONS:
-Stage 3 — correlate Stage 2 findings across logs and the product codebase:
-1. Cross-reference timestamps and error patterns across all available log sources to trace the event sequence
-2. Search the product GitHub repository for the component implementing the relevant logic
-3. Find the function or rule that defines precedence when two settings conflict
-4. Use git blame to identify when the behavior changed and which commit introduced it
-5. Update hypothesis with log and code evidence
+Stage 3 — Correlate the Stage 2 findings across logs and the product codebase:
+1. Cross-reference timestamps and error patterns across all available log sources to trace the event sequence.
+2. Search the product repository for the component that implements the relevant logic.
+3. Identify the function or rule that defines precedence when two settings conflict.
+4. Use git blame to determine when the behavior changed and which commit introduced it.
+5. Update the hypothesis with log and code evidence.
 
 REASONING:
-Quote exact source + timestamp or file path + line number for every finding. No paraphrase.
+For every finding, quote the exact source, timestamp or file path, and line number. Do not paraphrase.
 
 OUTPUT FORMAT:
 Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line behavior description with code or log reference`,
     prompt: `CONTEXT:
-Stage 3 — Artefact Correlation. Stage 2 confirmed the configuration gap. Now cross-correlate all available artifacts (logs, metrics, code) to precisely locate and describe the unexpected behavior.
+Stage 3 — Artefact Correlation. Stage 2 confirmed a gap in the configuration. Now cross-correlate all available artifacts (logs, metrics, code) to precisely locate and describe the unexpected behavior.
 
 INSTRUCTIONS:
-Complete in order:
-1. Log correlation — cross-reference timestamps and error patterns across all available log sources. Trace the exact sequence of events that leads to the observed symptom.
-2. Codebase search — search the product GitHub repository for files implementing the relevant logic. Identify the component responsible for the behavior.
-3. Precedence analysis — find the function or rule that defines what happens when two settings conflict.
+Complete the following steps in order:
+1. Log correlation — cross-reference timestamps and error patterns across all available log sources. Trace the exact sequence of events leading to the observed symptom.
+2. Codebase search — search the product repository for files implementing the relevant logic. Identify the component responsible for the behavior.
+3. Precedence analysis — find the function or rule that determines what happens when two settings conflict.
 4. Git blame — identify when the behavior changed and which commit introduced it.
-5. Update hypothesis with log and code evidence.
+5. Update the hypothesis with log and code evidence.
 
 REASONING:
-For each finding, quote the exact source + timestamp or file path + line number + exact text. Do not paraphrase — direct quote only.
+For each finding, quote the exact source, timestamp or file path, line number, and exact text. Do not paraphrase — direct quotes only.
 
 EXAMPLES:
 Log correlation:
-| Timestamp | Source | Event | Links to |
-|-----------|--------|-------|----------|
-| 10:42:01 | component-A.log | "starting filter evaluation" | context |
-| 10:42:01 | component-B.log | "rule applied: exclude X" | H1 |
+| Timestamp | Source              | Event                         | Links to |
+|-----------|---------------------|-------------------------------|----------|
+| 10:42:01  | component-A.log     | "starting filter evaluation"  | context  |
+| 10:42:01  | component-B.log     | "rule applied: exclude X"     | H1       |
 
 Code evidence:
-| File | Line | Quote | Verdict |
-|------|------|-------|---------|
-| [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
+| File        | Line | Quote                          | Verdict           |
+|-------------|------|--------------------------------|-------------------|
+| [file path] | [ln] | "[exact code or comment]"      | Confirms/Refutes H1 |
 
 OUTPUT FORMAT:
 Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line behavior description with artifact:line citation.`,
@@ -1268,39 +1268,39 @@ Log correlation timeline + code evidence table + updated hypothesis confidence %
   {
     id: "reproduction", label: "Reproduction", alias: ";p_s_4",
     color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
-    goal: "Reproduce the symptom in a sandbox using the customer's exact config. Enable debug logging and confirm the symptom appears in the log output. The verdict must be backed by a specific debug log line — not just 'it failed'.",
-    steps: ["What exact environment do I need to reproduce this — components, config, runtime?", "What would a successful reproduction look like vs. a failed one?", "What debug flag or log line would confirm the issue is happening inside the product?", "Am I using the customer's exact config — or have I changed anything?"],
+    goal: "Reproduce the symptom in a sandbox using the customer's exact configuration. Enable debug logging and confirm the symptom appears in the output. The verdict must be backed by a specific log line — not just 'it failed'.",
+    steps: ["What exact environment do I need — components, configuration, runtime version?", "What does a successful reproduction look like, and how does it differ from a failed attempt?", "Which debug flag or log line would confirm the issue is occurring inside the product?", "Am I using the customer's exact configuration — or have I changed anything?"],
     promptLight: `INSTRUCTIONS:
-Stage 4 — reproduce the issue in a sandbox environment:
-1. Present the full environment plan (components, config, debug flags) and wait for approval
-2. Set up the environment matching the customer setup
-3. Apply the exact customer config — do not change any setting
-4. Confirm the issue is reproduced
-5. Enable debug logging and capture the relevant output
-6. Document each step with the exact command and output
+Stage 4 — Reproduce the issue in a sandbox environment:
+1. Present the full environment plan (components, configuration, debug flags) and wait for approval before proceeding.
+2. Set up the environment to match the customer's setup.
+3. Apply the exact customer configuration — do not change any setting.
+4. Confirm the issue is reproduced.
+5. Enable debug logging and capture the relevant output.
+6. Document each step with the exact command and its output.
 
 REASONING:
-Verify configuration matches customer values exactly before each step. Stop and realign if anything differs.
+Verify that the configuration matches the customer's values exactly before each step. Stop and realign if anything differs.
 
 OUTPUT FORMAT:
 Environment plan + step-by-step reproduction log + debug snippet + pass/fail verdict`,
     prompt: `CONTEXT:
-Stage 4 — Reproduction. The hypothesis is confirmed by codebase evidence. Reproduce the issue in a sandbox environment.
+Stage 4 — Reproduction. Codebase evidence has confirmed the hypothesis. Reproduce the issue in a sandbox environment.
 
 INSTRUCTIONS:
 Before anything else:
-1. Present the full environment plan (components, config, debug flags) and wait for approval before executing.
+1. Present the full environment plan (components, configuration, debug flags) and wait for approval before executing.
 
-Then complete in order:
-2. Set up the environment matching the customer setup
-3. Deploy the components needed to simulate the customer workload
-4. Apply the exact customer config — do not change any setting
-5. Confirm the issue is reproduced (symptom present under customer config)
-6. Enable debug logging and capture the relevant component output
-7. Document each step with the exact command and output
+Then complete the following steps in order:
+2. Set up the environment to match the customer's setup.
+3. Deploy the components needed to simulate the customer workload.
+4. Apply the exact customer configuration — do not change any setting.
+5. Confirm the issue is reproduced (symptom present under the customer's configuration).
+6. Enable debug logging and capture the relevant component output.
+7. Document each step with the exact command and its output.
 
 REASONING:
-Before each step, verify the configuration matches the customer values exactly. If anything differs, stop and realign before continuing.
+Before each step, verify that the configuration matches the customer's values exactly. If anything differs, stop and realign before continuing.
 
 EXAMPLES:
 "[relevant log line]" → [what it confirms about the hypothesis]
@@ -1311,18 +1311,18 @@ Environment plan (presented first, before execution) + step-by-step reproduction
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5", bonus: false,
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
-    goal: "Package all findings for the engineering team: unexpected behavior (not root cause), evidence with artifact citations, affected versions, workaround, investigation scope, business impact, and a specific engineering ask. Every claim must have a source.",
-    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual, with evidence?", "Is every claim backed by a specific artifact reference — no unsupported assertions?", "What versions are confirmed affected, and is there a known fixed version or workaround?", "Have I summarized what was investigated and ruled out, so the engineering team doesn't duplicate work?", "What is the customer impact and urgency — production-blocking, data risk, or degraded experience?", "What specific action am I requesting from engineering — bug confirmation, fix prioritization, or workaround guidance?"],
+    goal: "Package all findings for the engineering team: the unexpected behavior (not the root cause), evidence with artifact citations, affected versions, a workaround if available, investigation scope, business impact, and a specific engineering ask. Every claim must have a source.",
+    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual — with supporting evidence?", "Is every claim backed by a specific artifact reference, with no unsupported assertions?", "Which versions are confirmed affected, and is there a known workaround?", "Have I summarized what was investigated and ruled out, so the engineering team does not duplicate work?", "What is the customer impact and urgency — production-blocking, data risk, or degraded experience?", "What specific action am I requesting from engineering — bug confirmation, fix prioritization, or workaround guidance?"],
     promptLight: `INSTRUCTIONS:
-Stage 5 — prepare the escalation package:
-1. Describe the unexpected behavior in one sentence: what was expected vs. what actually happens
-2. List all evidence with artifact references (file + line, diagnostic artifact, or screenshot)
-3. State affected versions — confirmed affected and confirmed working (if known)
-4. Propose a workaround the customer can apply today, if any
-5. Summarize what was investigated and ruled out so engineering doesn't duplicate work
+Stage 5 — Prepare the escalation package:
+1. Describe the unexpected behavior in one sentence: what was expected vs. what actually happens.
+2. List all evidence with artifact references (file + line, diagnostic artifact, or screenshot).
+3. State affected versions — confirmed affected and confirmed working (if known).
+4. Propose a workaround the customer can apply today, if one exists.
+5. Summarize what was investigated and ruled out, so engineering does not duplicate work.
 6. State the customer impact and urgency — is this production-blocking, a data risk, or a degraded experience?
-7. State your specific ask to engineering — bug confirmation, fix prioritization, workaround guidance, or documentation update
-8. Draft the escalation ticket — summary, reproduction steps, expected vs actual behavior, evidence, affected versions, workaround, investigation scope, impact, and ask
+7. State your specific ask to engineering — bug confirmation, fix prioritization, workaround guidance, or documentation update.
+8. Draft the escalation ticket — include: summary, reproduction steps, expected vs. actual behavior, evidence, affected versions, workaround, investigation scope, impact, and engineering ask.
 
 REASONING:
 Every claim must cite a specific artifact. No unsupported assertions.
@@ -1331,30 +1331,30 @@ Do not claim a root cause — describe the observed behavior and leave root caus
 OUTPUT FORMAT:
 Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft`,
     prompt: `CONTEXT:
-Stage 5 — Escalation. Reproduction confirmed. Prepare the escalation package for the engineering team.
+Stage 5 — Escalation. Reproduction is confirmed. Prepare the escalation package for the engineering team.
 
 INSTRUCTIONS:
-Complete in order:
-1. Describe the unexpected behavior in one sentence: expected outcome vs. actual outcome
-2. List all evidence with artifact references (file + line, diagnostic artifact, config, or screenshot)
-3. State affected versions (confirmed affected + confirmed working if known)
-4. Propose a workaround the customer can use today, if any exists
-5. Summarize what was investigated and ruled out during Stages 1–4
-6. State the customer impact and urgency: is this production-blocking, a data-loss risk, or a degraded-experience issue? How many customers are affected?
-7. State the specific action you need from engineering: bug confirmation, fix prioritization, workaround guidance, or documentation update — be explicit
-8. Draft the escalation ticket with: summary, reproduction steps, expected vs actual behavior, evidence table, affected versions, workaround, investigation scope, customer impact, and engineering ask
+Complete the following steps in order:
+1. Describe the unexpected behavior in one sentence: expected outcome vs. actual outcome.
+2. List all evidence with artifact references (file + line, diagnostic artifact, configuration, or screenshot).
+3. State affected versions — confirmed affected and confirmed working (if known).
+4. Propose a workaround the customer can use today, if one exists.
+5. Summarize what was investigated and ruled out during Stages 1–4.
+6. State the customer impact and urgency: is this production-blocking, a data-loss risk, or a degraded experience? How many customers are affected?
+7. State the specific action needed from engineering: bug confirmation, fix prioritization, workaround guidance, or documentation update — be explicit.
+8. Draft the escalation ticket with: summary, reproduction steps, expected vs. actual behavior, evidence table, affected versions, workaround, investigation scope, customer impact, and engineering ask.
 
 REASONING:
 For each claim, cite a specific artifact. No assertion without direct evidence.
-The escalation describes the behavior — root cause determination is the engineering team's responsibility.
-A clear engineering ask prevents back-and-forth and helps the team act immediately.
+The escalation describes the observed behavior — root cause determination is the engineering team's responsibility.
+A clear and specific engineering ask prevents unnecessary back-and-forth.
 
 EXAMPLES:
 - Unexpected behavior: [expected X, observed Y — cite artifact]
 - Evidence: [artifact reference + what it shows]
-- Affected: [version X confirmed affected · version Y confirmed working]
+- Affected versions: [version X confirmed affected · version Y confirmed working]
 - Workaround: [actionable step the customer can take today, or "none identified"]
-- Investigated and ruled out: [list of hypotheses eliminated with evidence]
+- Investigated and ruled out: [list of hypotheses eliminated with supporting evidence]
 - Impact: [production-blocking / degraded experience / data risk — N customers affected]
 - Engineering ask: [confirm this is a bug and prioritize a fix / provide a config-level workaround / clarify expected behavior in docs]
 
@@ -1364,55 +1364,55 @@ Unexpected behavior / evidence table / affected versions / workaround / investig
   {
     id: "retrospective", label: "Retro", alias: ";p_s_r", bonus: true,
     color: "#d97706", bg: "#fffbeb", border: "#fde68a",
-    goal: "Replay the investigation as a confidence timeline. Assign confidence % to each hypothesis at each stage, identify the turning-point artifact, flag any hypothesis ruled out late, and extract one concrete lesson for the next investigation.",
+    goal: "Replay the investigation as a confidence timeline. Assign a confidence percentage to each hypothesis at each stage, identify the turning-point artifact, flag any hypothesis that was ruled out late, and extract one concrete lesson for the next investigation.",
     steps: [
-      "Which single artifact caused the biggest confidence shift — and at which stage?",
+      "Which single artifact caused the biggest confidence shift — and at which stage did it occur?",
       "What would you do differently next time to reach that turning point faster?",
     ],
     quickPrompts: {
       technical: [
-        "What would be the best UI link to show the reported behavior directly?",
+        "What UI link would best illustrate the reported behavior directly?",
         "What commands would let me verify this evidence in the sandbox or customer environment?",
-        "List all evidence requiring a source outside the docs/internal KB — with a mini technical description for each.",
-        "Share a Mermaid diagram presenting the current topic in a technical way.",
+        "List all evidence that requires a source outside the official docs or internal KB — include a short technical description for each.",
+        "Generate a Mermaid diagram that presents the current topic in a technical way.",
         "What prerequisite concepts do I need to understand before I can diagnose this issue?",
       ],
       investigation: [
-        "What is the minimum information I need from this topic to get the most reliable evidence?",
-        "Build an evidence table: Evidence | Supports hypothesis | Contradicts hypothesis | Weight.",
-        "Rank my top 3 hypotheses by current probability. What single piece of evidence would confirm or eliminate each?",
-        "At what point in this investigation should I escalate, and what evidence would trigger that?",
+        "What is the minimum information I need to obtain the most reliable evidence on this topic?",
+        "Build an evidence table with the following columns: Evidence | Supports hypothesis | Contradicts hypothesis | Weight.",
+        "Rank my top 3 hypotheses by current probability. What single piece of evidence would confirm or eliminate each one?",
+        "At what point in this investigation should I escalate, and what evidence would trigger that decision?",
         "What evidence would increase or decrease confidence in the current leading hypothesis?",
       ],
     },
     promptLight: `INSTRUCTIONS:
-Bonus — Retrospective. Replay the investigation as a confidence timeline.
-1. List every hypothesis from Stage 1
-2. For each hypothesis, assign a confidence % at the end of each stage (1–5): 0 = ruled out, 100 = confirmed
-3. Identify the artifact or finding that caused the biggest single confidence shift
-4. Write a 2-sentence reflection: what was the turning point, and what would you do differently?
-5. For each stage prompt used, rate its output: was it directly usable, or did it require significant manual correction? Flag any stage where the prompt produced output that needed too much adjustment to be reusable.`,
+Bonus — Retrospective. Replay the investigation as a confidence timeline:
+1. List every hypothesis identified in Stage 1.
+2. For each hypothesis, assign a confidence percentage at the end of each stage (S1–S5): 0% = ruled out, 100% = confirmed.
+3. Identify the artifact or finding that caused the single largest confidence shift.
+4. Write a 2-sentence reflection: what was the turning point, and what would you do differently next time?
+5. For each stage prompt used, rate its output: was it directly usable, or did it require significant manual correction? Flag any stage where the prompt output needed too much adjustment to be reusable.`,
     prompt: `CONTEXT:
 Bonus — Retrospective. The full 5-stage investigation is complete. Replay it as a confidence timeline.
 
 INSTRUCTIONS:
-Complete in order:
-1. List every hypothesis identified in Stage 1 (use the same labels)
-2. Build a confidence table — for each hypothesis, estimate % confidence at the END of each stage (S1–S5):
-   - 0% = definitively ruled out · 100% = confirmed · intermediate = partial evidence
-3. Identify the key turning-point artifact: the single finding that caused the largest confidence jump for the winning hypothesis
-4. Identify any hypothesis ruled out late — what earlier evidence could have closed it sooner?
-5. Write a 2-sentence investigation reflection: what shifted the outcome, and what you would do faster next time
-6. Prompt quality audit — for each of the 5 stage prompts used (Goal / Light / Complete), evaluate:
+Complete the following steps in order:
+1. List every hypothesis identified in Stage 1, using the same labels.
+2. Build a confidence table — for each hypothesis, estimate the confidence percentage at the end of each stage (S1–S5):
+   - 0% = definitively ruled out · 100% = confirmed · values in between = partial evidence
+3. Identify the key turning-point artifact: the single finding that caused the largest confidence jump for the leading hypothesis.
+4. Identify any hypothesis that was ruled out late — what earlier evidence could have closed it sooner?
+5. Write a 2-sentence investigation reflection: what shifted the outcome, and what would you do faster next time?
+6. Prompt quality audit — for each of the 5 stage prompts used, evaluate:
    - Was the output directly usable as-is, or did it require significant manual correction?
    - Which stage produced the least reusable output — and what would make that prompt more autonomous?
-   - Which prompt could realistically be turned into a reusable skill (minimal human intervention needed)?
+   - Which prompt could realistically be turned into a reusable skill requiring minimal human intervention?
 
 EXAMPLES:
 - Confidence table: H1: [12, 45, 72, 90, 90] · H2: [18, 25, 10, 4, 0]
-- Turning point: "artifact.log:42 at Stage 2 — H1 jumped from 12% to 45%"
-- Ruled out late: "H2 could have been closed at Stage 1 if debug flag had been requested earlier"
-- Prompt audit: "Stage 3 Complete prompt required manual correction — code path was too generic. Stage 1 Light prompt output was directly reusable."`,
+- Turning point: "artifact.log line 42 at Stage 2 — H1 jumped from 12% to 45%"
+- Ruled out late: "H2 could have been closed at Stage 1 if debug logs had been requested earlier"
+- Prompt audit: "Stage 3 Complete prompt required manual correction — the code path suggestion was too generic. Stage 1 Light prompt output was directly reusable."`,
   },
 ];
 
