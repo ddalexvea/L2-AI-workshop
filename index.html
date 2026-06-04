@@ -89,8 +89,8 @@
       text-transform: uppercase; color: #7c3aed;
     }
     .prep-routing {
-      background: #fff; border: 1px solid #ddd6fe; border-radius: 6px;
-      padding: 0; color: #1f2328; position: relative; overflow: hidden;
+      background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px;
+      color: #1f2328; position: relative;
     }
     .prep-copy-btn {
       cursor: pointer; background: #7c3aed; color: #fff;
@@ -1703,21 +1703,19 @@ function PillarPrompt({ text }) {
     return <pre style={{fontFamily:'"SFMono-Regular",Consolas,monospace',fontSize:11.5,lineHeight:1.7,whiteSpace:'pre-wrap',padding:'12px 14px',margin:0,color:'#1f2328'}}>{text}</pre>;
   }
   return (
-    <div>
+    <pre style={{fontFamily:'"SFMono-Regular",Consolas,monospace',fontSize:11.5,lineHeight:1.7,whiteSpace:'pre-wrap',padding:'12px 14px',margin:0,color:'#1f2328'}}>
       {parts.map((p, i) => {
-        if (!p.header) return p.body.trim() ? <pre key={i} style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'8px 14px',margin:0,color:'#64748b',background:'#f8fafc',borderBottom:'1px solid #f1f5f9'}}>{p.body}</pre> : null;
-        const m = PILLAR_META[p.header] || { color:'#64748b', bg:'#f8fafc', border:'#e2e8f0', icon:'FileText' };
+        if (!p.header) return p.body ? <span key={i}>{p.body}</span> : null;
+        const m = PILLAR_META[p.header] || { color:'#64748b' };
         return (
-          <div key={i} style={{borderBottom:'1px solid #f1f5f9'}}>
-            <div style={{display:'flex',alignItems:'center',gap:6,padding:'5px 12px',background:m.bg,borderLeft:`3px solid ${m.color}`}}>
-              <Ic n={m.icon} size={11} color={m.color}/>
-              <span style={{fontSize:9,fontWeight:800,letterSpacing:'0.08em',color:m.color,textTransform:'uppercase'}}>{p.header}</span>
-            </div>
-            <pre style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'8px 14px',margin:0,color:'#1f2328',background:'#fff'}}>{p.body}</pre>
-          </div>
+          <span key={i}>
+            <span style={{fontWeight:700,color:m.color}}>{p.header}:</span>
+            {p.body ? '\n' + p.body : ''}
+            {'\n'}
+          </span>
         );
       })}
-    </div>
+    </pre>
   );
 }
 
@@ -2139,7 +2137,7 @@ function App() {
                       )}
                       {promptTab === 'light' && stage.promptLight && (
                         <div className="stage-prompt-wrap">
-                          <div className="stage-prompt" style={{padding:0,overflow:'hidden'}}>
+                          <div className="stage-prompt" style={{padding:0}}>
                             <PillarPrompt text={stage.promptLight}/>
                           </div>
                           <button className="stage-copy-btn" onClick={() => { navigator.clipboard.writeText(stage.promptLight); setCopiedStage(stage.id + "_light"); setTimeout(() => setCopiedStage(null), 2000); }}>
@@ -2149,7 +2147,7 @@ function App() {
                       )}
                       {promptTab === 'complete' && (
                         <div className="stage-prompt-wrap">
-                          <div className="stage-prompt" style={{padding:0,overflow:'hidden'}}>
+                          <div className="stage-prompt" style={{padding:0}}>
                             <PillarPrompt text={renderPrompt(stage.prompt)}/>
                           </div>
                           <button className="stage-copy-btn" onClick={() => copyPrompt(stage)}>
