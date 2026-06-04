@@ -88,10 +88,8 @@
       text-transform: uppercase; color: #7c3aed;
     }
     .prep-routing {
-      font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 11px; line-height: 1.65; white-space: pre-wrap;
       background: #fff; border: 1px solid #ddd6fe; border-radius: 6px;
-      padding: 12px 14px; color: #1f2328; position: relative;
+      padding: 0; color: #1f2328; position: relative; overflow: hidden;
     }
     .prep-copy-btn {
       cursor: pointer; background: #7c3aed; color: #fff;
@@ -1664,6 +1662,54 @@ A single self-contained HTML file with inline CSS only. Must follow these rules:
 - Tables: alternating row shading (#f8fafc), colored left-border per row for status
 - Font: system-ui, 13px body, bold section headers`;
 
+/* ── Pillar prompt renderer ────────────────────────────── */
+const PILLAR_META = {
+  'CONTEXT':       { color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe', icon: 'Globe' },
+  'INSTRUCTIONS':  { color: '#15803d', bg: '#f0fdf4', border: '#bbf7d0', icon: 'ListChecks' },
+  'EXAMPLES':      { color: '#7c3aed', bg: '#faf5ff', border: '#ddd6fe', icon: 'BookOpen' },
+  'REASONING':     { color: '#b45309', bg: '#fffbeb', border: '#fde68a', icon: 'Brain' },
+  'OUTPUT FORMAT': { color: '#0f766e', bg: '#f0fdfa', border: '#99f6e4', icon: 'FileOutput' },
+};
+
+function PillarPrompt({ text }) {
+  const HEADERS = Object.keys(PILLAR_META);
+  // Split text at any known pillar header that appears at the start of a line
+  const headerRe = new RegExp(`^(${HEADERS.join('|')}):`, 'm');
+  const parts = [];
+  let remaining = text;
+  while (remaining.length > 0) {
+    const m = headerRe.exec(remaining);
+    if (!m) { parts.push({ header: null, body: remaining }); break; }
+    if (m.index > 0) parts.push({ header: null, body: remaining.slice(0, m.index) });
+    const header = m[1];
+    const afterHeader = remaining.slice(m.index + m[0].length).trimStart();
+    const next = headerRe.exec(afterHeader);
+    const body = next ? afterHeader.slice(0, next.index) : afterHeader;
+    parts.push({ header, body: body.trimEnd() });
+    remaining = next ? afterHeader.slice(next.index) : '';
+  }
+  if (parts.every(p => !p.header)) {
+    return <pre style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'12px 14px',margin:0,color:'#1f2328'}}>{text}</pre>;
+  }
+  return (
+    <div>
+      {parts.map((p, i) => {
+        if (!p.header) return p.body.trim() ? <pre key={i} style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'8px 14px',margin:0,color:'#64748b',background:'#f8fafc',borderBottom:'1px solid #f1f5f9'}}>{p.body}</pre> : null;
+        const m = PILLAR_META[p.header] || { color:'#64748b', bg:'#f8fafc', border:'#e2e8f0', icon:'FileText' };
+        return (
+          <div key={i} style={{borderBottom:'1px solid #f1f5f9'}}>
+            <div style={{display:'flex',alignItems:'center',gap:6,padding:'5px 12px',background:m.bg,borderLeft:`3px solid ${m.color}`}}>
+              <Ic n={m.icon} size={11} color={m.color}/>
+              <span style={{fontSize:9,fontWeight:800,letterSpacing:'0.08em',color:m.color,textTransform:'uppercase'}}>{p.header}</span>
+            </div>
+            <pre style={{fontFamily:'monospace',fontSize:11,lineHeight:1.65,whiteSpace:'pre-wrap',padding:'8px 14px',margin:0,color:'#1f2328',background:'#fff'}}>{p.body}</pre>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── App ───────────────────────────────────────────────── */
 function App() {
   const [raw, setRaw]                     = useState(DEFAULT_TEXT);
@@ -1804,7 +1850,7 @@ function App() {
 
               <div className="prep-block">
                 <div className="prep-block-label">{tool === "cursor" ? "Cursor Canvas — session routing" : "Claude Code — session routing"}</div>
-                <div className="prep-routing">{tool === "cursor" ? CANVAS_SESSION_ROUTING : HTML_SESSION_ROUTING}</div>
+                <div className="prep-routing"><PillarPrompt text={tool === "cursor" ? CANVAS_SESSION_ROUTING : HTML_SESSION_ROUTING}/></div>
                 <button
                   className="prep-copy-btn"
                   onClick={() => {
@@ -1852,7 +1898,7 @@ function App() {
               </div>
               <div className="prep-block">
                 <div className="prep-block-label" style={{ color: "#15803d" }}>Prompt preview</div>
-                <div className="prep-routing" style={{ borderColor: "#bbf7d0" }}>{buildGamePrompt(metaphor)}</div>
+                <div className="prep-routing" style={{ borderColor: "#bbf7d0" }}><PillarPrompt text={buildGamePrompt(metaphor)}/></div>
                 <button
                   className="prep-copy-btn"
                   style={{ background: "#16a34a" }}
