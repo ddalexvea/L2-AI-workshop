@@ -1656,6 +1656,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [metaphor, setMetaphor]               = useState("");
   const [promptTab, setPromptTab]             = useState("goal");
+  const [qTab, setQTab]                       = useState("technical");
   useEffect(() => { setPromptTab("goal"); }, [activeStage]);
 
   function toggleStage(id) {
@@ -2082,7 +2083,6 @@ function App() {
 
                     {/* Quick Prompts card — retro stage only */}
                     {stage.quickPrompts && (() => {
-                      const [qTab, setQTab] = React.useState('technical');
                       const groups = {
                         technical:    {label:'Technical Insights',    icon:'Wrench',    color:'#2563eb'},
                         investigation:{label:'Investigation Insights', icon:'Microscope', color:'#6d28d9'},
