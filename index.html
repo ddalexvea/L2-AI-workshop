@@ -2138,7 +2138,7 @@ function App() {
                       {promptTab === 'light' && stage.promptLight && (
                         <div className="stage-prompt-wrap">
                           <div className="stage-prompt" style={{padding:0}}>
-                            <PillarPrompt text={stage.promptLight}/>
+                            <PillarPrompt text={buildPromptWithContext(stage, stage.promptLight)}/>
                           </div>
                           <button className="stage-copy-btn" onClick={() => { navigator.clipboard.writeText(buildPromptWithContext(stage, stage.promptLight)); setCopiedStage(stage.id + "_light"); setTimeout(() => setCopiedStage(null), 2000); }}>
                             {copiedStage === stage.id + "_light" ? <><Ic n="Check" size={11}/> Copied!</> : <><Ic n="Copy" size={11}/> Copy</>}
@@ -2148,7 +2148,7 @@ function App() {
                       {promptTab === 'complete' && (
                         <div className="stage-prompt-wrap">
                           <div className="stage-prompt" style={{padding:0}}>
-                            <PillarPrompt text={stage.prompt}/>
+                            <PillarPrompt text={buildPromptWithContext(stage, stage.prompt)}/>
                           </div>
                           <button className="stage-copy-btn" onClick={() => copyPrompt(stage)}>
                             {copiedStage === stage.id ? <><Ic n="Check" size={11}/> Copied!</> : <><Ic n="Copy" size={11}/> Copy</>}
