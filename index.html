@@ -1066,7 +1066,7 @@ const STAGE_VISUALS = {
           {/* Zone 2 — brain with 5 lines */}
           <div style={{width:48,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}>
             <svg width="48" height="148" viewBox="0 0 48 148" style={{position:'absolute',inset:0}}>
-              {[18,38,58,78,98].map((y,i)=>(
+              {[22,46,74,102,126].map((y,i)=>(
                 <line key={i} x1="0" y1={y} x2="48" y2="74" stroke={C} strokeWidth="1" strokeOpacity="0.3"/>
               ))}
             </svg>
@@ -1173,9 +1173,7 @@ Quote exact customer wording for each trust level, or write "no evidence yet".
 Infer artifact candidates from product area and symptoms — do not use a fixed list.
 
 OUTPUT FORMAT:
-Problem restatement + elements table + artifact decision table
-
-[PASTE CUSTOMER MESSAGE HERE]`,
+Problem restatement + elements table + artifact decision table`,
     prompt: `CONTEXT:
 Stage 1 — Kickoff. Starting a ticket investigation. Working in 5 stages: Kickoff, Investigation, Artefact Correlation, Reproduction, and Escalation.
 
@@ -1204,9 +1202,7 @@ Artifact decision table:
 | [artifact type] | YES/NO | [one sentence reason] |
 
 OUTPUT FORMAT:
-1-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.
-
-[PASTE CUSTOMER MESSAGE HERE]`,
+1-sentence problem restatement + elements table + hypotheses with confidence % + artifact decision table.`,
   },
   {
     id: "investigation", label: "Investigation", alias: ";p_s_2",
@@ -1225,9 +1221,7 @@ REASONING:
 No trust change without a direct quote from the artifact.
 
 OUTPUT FORMAT:
-Updated elements table + evidence table + updated confidence % + one key finding sentence
-
-[ATTACH CONFIGURATION AND RUNTIME ARTIFACTS]`,
+Updated elements table + evidence table + updated confidence % + one key finding sentence`,
     prompt: `CONTEXT:
 Stage 2 — Investigation. Stage 1 identified initial hypotheses. Artifacts are now available.
 
@@ -1249,9 +1243,7 @@ EXAMPLES:
 | [what was found] | [artifact name] | "[exact line]" | Supports/Refutes H1 |
 
 OUTPUT FORMAT:
-Updated elements table + evidence table + updated hypothesis confidence % + one key finding sentence.
-
-[ATTACH CONFIGURATION AND RUNTIME ARTIFACTS]`,
+Updated elements table + evidence table + updated hypothesis confidence % + one key finding sentence.`,
   },
   {
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
@@ -1270,9 +1262,7 @@ REASONING:
 Quote exact source + timestamp or file path + line number for every finding. No paraphrase.
 
 OUTPUT FORMAT:
-Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line behavior description with code or log reference
-
-[PASTE STAGE 2 FINDINGS HERE]`,
+Log correlation timeline + code evidence table + updated confidence % (expected 70–95%) + one-line behavior description with code or log reference`,
     prompt: `CONTEXT:
 Stage 3 — Artefact Correlation. Stage 2 confirmed the configuration gap. Now cross-correlate all available artifacts (logs, metrics, code) to precisely locate and describe the unexpected behavior.
 
@@ -1300,9 +1290,7 @@ Code evidence:
 | [file path] | [line] | "[exact code or comment]" | Confirms/Refutes H1 |
 
 OUTPUT FORMAT:
-Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line behavior description with artifact:line citation.
-
-[PASTE STAGE 2 FINDINGS HERE]`,
+Log correlation timeline + code evidence table + updated hypothesis confidence % (expected 70–95%) + one-line behavior description with artifact:line citation.`,
   },
   {
     id: "reproduction", label: "Reproduction", alias: ";p_s_4",
@@ -1322,9 +1310,7 @@ REASONING:
 Verify configuration matches customer values exactly before each step. Stop and realign if anything differs.
 
 OUTPUT FORMAT:
-Environment plan + step-by-step reproduction log + debug snippet + pass/fail verdict
-
-[PASTE CUSTOMER CONFIG HERE]`,
+Environment plan + step-by-step reproduction log + debug snippet + pass/fail verdict`,
     prompt: `CONTEXT:
 Stage 4 — Reproduction. The hypothesis is confirmed by codebase evidence. Reproduce the issue in a sandbox environment.
 
@@ -1347,9 +1333,7 @@ EXAMPLES:
 "[relevant log line]" → [what it confirms about the hypothesis]
 
 OUTPUT FORMAT:
-Environment plan (presented first, before execution) + step-by-step reproduction log + debug log snippet confirming the behavior + pass/fail verdict.
-
-[PASTE CUSTOMER CONFIG HERE]`,
+Environment plan (presented first, before execution) + step-by-step reproduction log + debug log snippet confirming the behavior + pass/fail verdict.`,
   },
   {
     id: "escalation", label: "Escalation", alias: ";p_s_5", bonus: false,
@@ -1372,10 +1356,7 @@ Every claim must cite a specific artifact. No unsupported assertions.
 Do not claim a root cause — describe the observed behavior and leave root cause analysis to the engineering team.
 
 OUTPUT FORMAT:
-Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft
-
-[CUSTOMER ISSUE — paste original customer message]
-[INVESTIGATION — paste Stage 1–4 findings]`,
+Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft`,
     prompt: `CONTEXT:
 Stage 5 — Escalation. Reproduction confirmed. Prepare the escalation package for the engineering team.
 
@@ -1405,32 +1386,22 @@ EXAMPLES:
 - Engineering ask: [confirm this is a bug and prioritize a fix / provide a config-level workaround / clarify expected behavior in docs]
 
 OUTPUT FORMAT:
-Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft.
-
-[CUSTOMER ISSUE DESCRIPTION — paste original customer message]
-[CONCERN / ISSUE — paste Stage 1 elements table and hypotheses]
-[INVESTIGATION — paste Stage 2 artifact findings and trust level updates]
-[CODEBASE CORRELATION — paste Stage 3 code evidence]
-[REPRODUCTION — paste Stage 4 reproduction log and debug output]`,
+Unexpected behavior / evidence table / affected versions / workaround / investigation scope / impact & urgency / engineering ask / escalation draft.`,
   },
   {
     id: "retrospective", label: "Retro", alias: ";p_s_r", bonus: true,
     color: "#d97706", bg: "#fffbeb", border: "#fde68a",
     goal: "Replay the investigation as a confidence timeline. Assign confidence % to each hypothesis at each stage, identify the turning-point artifact, flag any hypothesis ruled out late, and extract one concrete lesson for the next investigation.",
     steps: [
-      "For each hypothesis: at which stage did confidence change most — and what artifact caused it?",
-      "Which single piece of evidence was the turning point of the investigation?",
-      "Was any hypothesis ruled out too late — what would have closed it earlier?",
-      "What would you do differently in the next investigation — triage framing, artifact request, or escalation?",
+      "Which single artifact caused the biggest confidence shift — and at which stage?",
+      "What would you do differently next time to reach that turning point faster?",
     ],
     promptLight: `INSTRUCTIONS:
 Bonus — Retrospective. Replay the investigation as a confidence timeline.
 1. List every hypothesis from Stage 1
 2. For each hypothesis, assign a confidence % at the end of each stage (1–5): 0 = ruled out, 100 = confirmed
 3. Identify the artifact or finding that caused the biggest single confidence shift
-4. Write a 2-sentence reflection: what was the turning point, and what would you do differently?
-
-[PASTE STAGE 1–5 FINDINGS]`,
+4. Write a 2-sentence reflection: what was the turning point, and what would you do differently?`,
     prompt: `CONTEXT:
 Bonus — Retrospective. The full 5-stage investigation is complete. Replay it as a confidence timeline.
 
@@ -1446,14 +1417,7 @@ Complete in order:
 EXAMPLES:
 - Confidence table: H1: [12, 45, 72, 90, 90] · H2: [18, 25, 10, 4, 0]
 - Turning point: "artifact.log:42 at Stage 2 — H1 jumped from 12% to 45%"
-- Ruled out late: "H2 could have been closed at Stage 1 if debug flag had been requested earlier"
-
-[CUSTOMER ISSUE DESCRIPTION — paste original customer message]
-[CONCERN / ISSUE — paste Stage 1 elements table and hypotheses]
-[INVESTIGATION — paste Stage 2 artifact findings]
-[CODEBASE CORRELATION — paste Stage 3 code evidence]
-[REPRODUCTION — paste Stage 4 reproduction log]
-[ESCALATION — paste Stage 5 package]`,
+- Ruled out late: "H2 could have been closed at Stage 1 if debug flag had been requested earlier"`,
   },
 ];
 
