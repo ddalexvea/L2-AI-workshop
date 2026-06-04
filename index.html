@@ -782,7 +782,6 @@ const HV = {
 const STAGE_VISUALS = {
   triage: {
     color:'#2563eb', icon:'SearchCheck',
-    concept: 'Extract structure from noise — before opening a single artifact.',
     graphic: () => {
       const C = '#2563eb';
       return (
@@ -829,7 +828,6 @@ const STAGE_VISUALS = {
   },
   investigation: {
     color:'#15803d', icon:'Microscope',
-    concept: 'Compare what was configured vs. what actually ran — find the gap.',
     graphic: () => {
       const C = '#15803d';
       const rows = [
@@ -882,7 +880,6 @@ const STAGE_VISUALS = {
   },
   artefact: {
     color:'#6d28d9', icon:'GitMerge',
-    concept: 'Pinpoint the exact code location and commit where the behavior lives.',
     graphic: () => {
       const C = '#6d28d9';
       const rightRows = [
@@ -940,7 +937,6 @@ const STAGE_VISUALS = {
   },
   reproduction: {
     color:'#c2410c', icon:'FlaskConical',
-    concept: 'Verify the hypothesis by reproducing the symptom in a controlled sandbox.',
     graphic: () => {
       const C = '#c2410c';
       const leftRows = [
@@ -994,7 +990,6 @@ const STAGE_VISUALS = {
   },
   escalation: {
     color:'#0f766e', icon:'Send',
-    concept: 'Compress 4 stages of investigation into a package an engineer can act on immediately.',
     graphic: () => {
       const C = '#0f766e';
       return (
@@ -1044,7 +1039,6 @@ const STAGE_VISUALS = {
   },
   retrospective: {
     color:'#d97706', icon:'TrendingUp',
-    concept: 'Replay the investigation as a confidence graph — one line per hypothesis across all 5 stages.',
     graphic: () => {
       const C = '#d97706';
       const xs = [16,46,76,106,136];
@@ -2009,8 +2003,12 @@ function App() {
                             <div style={{width:26,height:26,borderRadius:6,background:sv.color,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                               <Ic n={sv.icon} size={13} color="#fff"/>
                             </div>
-                            <span style={{fontSize:12,fontWeight:600,color:'#1e293b',lineHeight:1.3,flex:1}}>{sv.concept}</span>
-                            <span style={{fontSize:7,fontWeight:700,color:sv.color,background:`${sv.color}18`,border:`1px solid ${sv.color}50`,borderRadius:4,padding:'1px 6px',flexShrink:0,letterSpacing:'0.05em'}}>HINT</span>
+                            <div style={{flex:1,display:'flex',gap:6}}>
+                              <Ic n="Eye" size={12} color={sv.color}/>
+                              <Ic n="Brain" size={12} color={sv.color}/>
+                              <Ic n="ArrowRight" size={12} color={`${sv.color}80`}/>
+                              <Ic n="FileCheck" size={12} color={sv.color}/>
+                            </div>
                             <Ic n="ChevronDown" size={13} color={sv.color} style={{flexShrink:0,transition:'transform 0.2s'}} className="visual-chevron"/>
                           </summary>
                           {/* Full-width graphic */}
@@ -2074,12 +2072,17 @@ function App() {
                       </div>
                     )}
 
-                    {/* Prompts — Goal / Light / Complete tab selector */}
+                    {/* Prompts section */}
                     <div style={{marginTop:6}}>
-                      <div className="checklist-label" style={{marginBottom:6}}>Prompt</div>
+                      {/* Goal — always visible */}
+                      <div className="checklist-label" style={{marginBottom:6}}>Goal</div>
+                      <div style={{fontSize:13,color:'#475569',lineHeight:1.65,padding:'10px 14px',background:'#f8fafc',borderRadius:8,border:'1px solid #e2e8f0',borderLeft:`3px solid ${stage.color}`,marginBottom:12}}>
+                        {stage.goal || 'No goal defined for this stage.'}
+                      </div>
+                      {/* Result prompts — 2-tab selector */}
+                      <div className="checklist-label" style={{marginBottom:6}}>Result prompt</div>
                       <div style={{display:'flex',background:'#f1f5f9',borderRadius:8,padding:3,marginBottom:10,gap:2}}>
                         {[
-                          {id:'goal',     label:'Goal',     icon:'Target'},
                           {id:'light',    label:'Light',    icon:'Zap'},
                           {id:'complete', label:'Complete', icon:'BookOpen'},
                         ].map(tab => {
@@ -2100,11 +2103,6 @@ function App() {
                           );
                         })}
                       </div>
-                      {promptTab === 'goal' && (
-                        <div style={{fontSize:13,color:'#475569',lineHeight:1.65,padding:'10px 14px',background:'#f8fafc',borderRadius:8,border:'1px solid #e2e8f0',borderLeft:`3px solid ${stage.color}`}}>
-                          {stage.goal || 'No goal defined for this stage.'}
-                        </div>
-                      )}
                       {promptTab === 'light' && stage.promptLight && (
                         <div className="stage-prompt-wrap">
                           <pre className="stage-prompt">{stage.promptLight}</pre>
@@ -2113,7 +2111,7 @@ function App() {
                           </button>
                         </div>
                       )}
-                      {promptTab === 'complete' && (
+                      {(promptTab === 'complete' || promptTab === 'goal') && (
                         <div className="stage-prompt-wrap">
                           <pre className="stage-prompt">{renderPrompt(stage.prompt)}</pre>
                           <button className="stage-copy-btn" onClick={() => copyPrompt(stage)}>
