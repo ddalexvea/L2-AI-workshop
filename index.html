@@ -1285,7 +1285,7 @@ Log correlation timeline + code evidence table + updated hypothesis confidence %
     id: "reproduction", label: "Reproduction", alias: ";p_s_4",
     color: "#c2410c", bg: "#fff7ed", border: "#fed7aa",
     goal: "Reproduce the symptom in a sandbox using the customer's exact configuration. Enable debug logging and confirm the symptom appears in the output. The verdict must be backed by a specific log line — not just 'it failed'.",
-    steps: ["What exact environment do I need — components, configuration, runtime version?", "What does a successful reproduction look like, and how does it differ from a failed attempt?", "Which debug flag or log line would confirm the issue is occurring inside the product?", "Am I using the customer's exact configuration — or have I changed anything?"],
+    steps: ["What environment, config, and version do I need?", "What does a successful reproduction look like?", "Which log line would confirm the issue?", "Am I using the customer's exact configuration?"],
     promptLight: `INSTRUCTIONS:
 Stage 4 — Reproduce the issue in a sandbox environment:
 1. Present the full environment plan (components, configuration, debug flags) and wait for approval before proceeding.
