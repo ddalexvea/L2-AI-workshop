@@ -1328,7 +1328,7 @@ Environment plan (presented first, before execution) + step-by-step reproduction
     id: "escalation", label: "Escalation", alias: ";p_s_5", bonus: false,
     color: "#0f766e", bg: "#f0fdfa", border: "#99f6e4",
     goal: "Package all findings for the engineering team: the unexpected behavior (not the root cause), evidence with artifact citations, affected versions, a workaround if available, investigation scope, business impact, and a specific engineering ask. Every claim must have a source.",
-    steps: ["Can I describe the unexpected behavior precisely — expected vs. actual — with supporting evidence?", "Is every claim backed by a specific artifact reference, with no unsupported assertions?", "Which versions are confirmed affected, and is there a known workaround?", "Have I summarized what was investigated and ruled out, so the engineering team does not duplicate work?", "What is the customer impact and urgency — production-blocking, data risk, or degraded experience?", "What specific action am I requesting from engineering — bug confirmation, fix prioritization, or workaround guidance?"],
+    steps: ["Can I describe expected vs. actual behavior with evidence?", "Is every claim backed by an artifact?", "Which versions are affected — and is there a workaround?", "What did I investigate and rule out?", "What is the customer impact and urgency?", "What exactly am I asking engineering to do?"],
     promptLight: `INSTRUCTIONS:
 Stage 5 — Prepare the escalation package:
 1. Describe the unexpected behavior in one sentence: what was expected vs. what actually happens.
