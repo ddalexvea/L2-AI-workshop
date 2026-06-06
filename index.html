@@ -1238,7 +1238,7 @@ Updated elements table + evidence table + updated hypothesis confidence % + one 
     id: "artefact", label: "Artefact Correlation", alias: ";p_s_3",
     color: "#6d28d9", bg: "#faf5ff", border: "#ddd6fe",
     goal: "Correlate timestamps across log sources, locate the exact file and function responsible, and identify when the behavior changed. The output must be a precise code or log reference — not a theory.",
-    steps: ["How do timestamps and error patterns align across all available log sources?", "Which component in the product codebase is responsible for this behavior?", "Which rule or function takes precedence when two settings conflict — and when did that change?", "Can I describe the observed behavior precisely, backed by a specific log line or code reference?"],
+    steps: ["Do the log timestamps align across sources?", "Which component is responsible for this behavior?", "Which rule takes precedence — and when did it change?", "Can I back the observed behavior with a specific log or code reference?"],
     promptLight: `INSTRUCTIONS:
 Stage 3 — Correlate the Stage 2 findings across logs and the product codebase:
 1. Cross-reference timestamps and error patterns across all available log sources to trace the event sequence.
