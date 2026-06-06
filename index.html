@@ -2020,8 +2020,8 @@ function App() {
               </>
             )}
 
-            {/* ── Progress hint for Kickoff — shown until all lines are labeled ── */}
-            {activeStage === 'triage' && !allLabeled && (
+            {/* ── Progress hint for Kickoff — shown only when palette is open ── */}
+            {activeStage === 'triage' && !allLabeled && paletteOpen && (
               <div style={{border:'1px solid #bfdbfe',borderRadius:8,background:'#eff6ff',padding:'10px 14px',display:'flex',alignItems:'center',gap:12}}>
                 <div style={{flex:1}}>
                   <div style={{fontSize:12,fontWeight:700,color:'#1d4ed8',marginBottom:4}}>
