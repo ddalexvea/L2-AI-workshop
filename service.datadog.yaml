@@ -4,12 +4,8 @@ team: tse-sandbox
 contacts:
   - type: email
     contact: alexandre.vea@datadoghq.com
-links:
-  - name: Datadog Docs
-    type: doc
-    url: https://docs.datadoghq.com/service_catalog/
 tags:
   - env:sandbox
   - repro:zd-2913782
-  - test:stale-stored-default-branch
-  - triggered: 2026-06-10T204520Z
+  - test:stale-cache-main-while-develop-is-default
+  - triggered: 2026-06-10T205200Z
