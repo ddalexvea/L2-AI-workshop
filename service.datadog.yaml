@@ -12,3 +12,4 @@ tags:
   - env:sandbox
   - repro:zd-2913782
   - test:default-branch-non-main
+  - triggered: 2026-06-10T202200Z
